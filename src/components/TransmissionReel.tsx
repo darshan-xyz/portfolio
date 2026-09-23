@@ -118,7 +118,7 @@ export function TransmissionReel({
 
       // scanline
       ctx.fillStyle = "rgba(124, 249, 201, 0.08)";
-      const sy = ((frame * 2) % h);
+      const sy = (frame * 2) % h;
       ctx.fillRect(0, sy, w, 2 * dpr);
       raf = requestAnimationFrame(loop);
     };
@@ -152,8 +152,7 @@ export function TransmissionReel({
           ● LIVE
         </div>
         <div className="pointer-events-none absolute bottom-3 right-3 font-mono text-[9px] uppercase tracking-widest text-accent">
-          T+{String(Math.floor(t / 60)).padStart(2, "0")}:
-          {String(t % 60).padStart(2, "0")}
+          T+{String(Math.floor(t / 60)).padStart(2, "0")}:{String(t % 60).padStart(2, "0")}
         </div>
       </div>
       <div className="flex items-center justify-between border-t border-border/60 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.3em]">

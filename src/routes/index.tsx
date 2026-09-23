@@ -23,7 +23,11 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: TITLE },
       { name: "description", content: DESCRIPTION },
-      { name: "keywords", content: "Darshan R, AI engineer, ML engineer portfolio, generative AI, computer vision, LangChain, agentic AI, RAG, SREC, Coimbatore" },
+      {
+        name: "keywords",
+        content:
+          "Darshan R, AI engineer, ML engineer portfolio, generative AI, computer vision, LangChain, agentic AI, RAG, SREC, Coimbatore",
+      },
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "profile" },
@@ -105,7 +109,6 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-
 function HomePage() {
   return (
     <div className="min-h-screen text-foreground">
@@ -115,12 +118,22 @@ function HomePage() {
       <main>
         <HeroSection />
         <ScrollMarquee />
-        <Reveal><ExperienceSection /></Reveal>
-        <Reveal><ProjectsSection /></Reveal>
+        <Reveal>
+          <ExperienceSection />
+        </Reveal>
+        <Reveal>
+          <ProjectsSection />
+        </Reveal>
         <ScrollMarquee />
-        <Reveal><SkillsSection /></Reveal>
-        <Reveal><CertificationsSection /></Reveal>
-        <Reveal><ContactSection /></Reveal>
+        <Reveal>
+          <SkillsSection />
+        </Reveal>
+        <Reveal>
+          <CertificationsSection />
+        </Reveal>
+        <Reveal>
+          <ContactSection />
+        </Reveal>
       </main>
       <SiteFooter />
     </div>

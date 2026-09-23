@@ -50,7 +50,10 @@ export const Route = createFileRoute("/experience/$slug")({
           children: JSON.stringify(
             breadcrumbs([
               { name: "Home", path: "/" },
-              { name: `${loaderData.role} @ ${loaderData.company}`, path: `/experience/${params.slug}` },
+              {
+                name: `${loaderData.role} @ ${loaderData.company}`,
+                path: `/experience/${params.slug}`,
+              },
             ]),
           ),
         },

@@ -3,7 +3,6 @@ import { projects } from "@/data/portfolio";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { abs, breadcrumbs } from "@/lib/seo";
 
-
 import type { Project } from "@/data/portfolio";
 
 export const Route = createFileRoute("/projects/$slug")({
@@ -15,10 +14,7 @@ export const Route = createFileRoute("/projects/$slug")({
   head: ({ loaderData, params }) => {
     if (!loaderData) {
       return {
-        meta: [
-          { title: "Project not found — Darshan R" },
-          { name: "robots", content: "noindex" },
-        ],
+        meta: [{ title: "Project not found — Darshan R" }, { name: "robots", content: "noindex" }],
       };
     }
     const title = `${loaderData.name} — Darshan R`;

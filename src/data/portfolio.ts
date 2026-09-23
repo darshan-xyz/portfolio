@@ -66,7 +66,14 @@ export const experience: ExperienceRole[] = [
       "Applied Explainable AI techniques (SHAP) to interpret model predictions and identified key factors influencing pricing.",
       "Built an end-to-end ML workflow including data cleaning, model training, evaluation, and result visualization.",
     ],
-    stack: ["Python", "Machine Learning", "Scikit-learn", "Regression", "SHAP", "Feature Engineering"],
+    stack: [
+      "Python",
+      "Machine Learning",
+      "Scikit-learn",
+      "Regression",
+      "SHAP",
+      "Feature Engineering",
+    ],
     outcomes: [
       { metric: "SHAP", label: "explainability" },
       { metric: "e2e", label: "ml_workflow" },
@@ -88,7 +95,14 @@ export const experience: ExperienceRole[] = [
       "Improved user experience by optimizing navigation, booking flow, and interface clarity.",
       "Collaborated with stakeholders to ensure designs aligned with real-world user needs and business goals.",
     ],
-    stack: ["UI/UX Design", "User Research", "Wireframing", "Cognitive Design", "Prototyping", "A11y"],
+    stack: [
+      "UI/UX Design",
+      "User Research",
+      "Wireframing",
+      "Cognitive Design",
+      "Prototyping",
+      "A11y",
+    ],
     outcomes: [
       { metric: "A11y", label: "accessibility" },
       { metric: "Trust", label: "cognitive_design" },
@@ -111,7 +125,8 @@ export const projects: Project[] = [
   {
     slug: "agentic-supermarket-pos",
     name: "Agentic Supermarket POS Architecture",
-    summary: "Unified mobile & web POS with AI chat interface, domain skills, FEFO inventory, and GST billing.",
+    summary:
+      "Unified mobile & web POS with AI chat interface, domain skills, FEFO inventory, and GST billing.",
     description:
       "A unified mobile and web point-of-sale platform featuring an intelligent agentic AI chat interface for checkout, inventory, billing, and store operations, backed by domain skills, typed tools, multi-turn state, and persistent memory.",
     highlights: [
@@ -127,7 +142,8 @@ export const projects: Project[] = [
   {
     slug: "enterprise-ai-recruitment-proctoring",
     name: "Enterprise AI Recruitment & Proctoring Engine",
-    summary: "Latency-isolated WebRTC gateway, biometric facial mesh proctoring, and on-premise LLMs.",
+    summary:
+      "Latency-isolated WebRTC gateway, biometric facial mesh proctoring, and on-premise LLMs.",
     description:
       "An enterprise-grade recruitment and evaluation engine architected with a gateway isolating WebRTC signaling from CPU-bound ML pipelines, privacy-focused biometric facial mesh proctoring, and sovereign on-premise LLMs with strict schema constraints.",
     highlights: [
@@ -143,7 +159,8 @@ export const projects: Project[] = [
   {
     slug: "realtime-surveillance-pipeline",
     name: "Robust Vision Pipeline for Real-Time Surveillance",
-    summary: "Real-time deep learning vision system for intelligent object recognition and anomaly detection.",
+    summary:
+      "Real-time deep learning vision system for intelligent object recognition and anomaly detection.",
     description:
       "An applied computer vision pipeline for real-time object recognition and anomaly detection using modern deep learning architectures, hardened against noisy real-world inputs.",
     highlights: [
@@ -158,7 +175,8 @@ export const projects: Project[] = [
   {
     slug: "multi-agent-equity-research",
     name: "Multi-Agent Equity Research & Portfolio Intelligence",
-    summary: "15-node LangGraph multi-agent LLM ecosystem for autonomous equity market scanning and risk controls.",
+    summary:
+      "15-node LangGraph multi-agent LLM ecosystem for autonomous equity market scanning and risk controls.",
     description:
       "An autonomous financial intelligence platform orchestrating a 15-node LangGraph multi-agent system to scan market equities, compute risk-managed position sizing, and simulate trade execution with memory reflection.",
     highlights: [
@@ -173,7 +191,8 @@ export const projects: Project[] = [
   {
     slug: "rag-document-intelligence",
     name: "Scalable RAG System for Document Intelligence",
-    summary: "Layout-aware parsing, ChromaDB semantic retrieval, and on-prem local LLMs for factual grounding.",
+    summary:
+      "Layout-aware parsing, ChromaDB semantic retrieval, and on-prem local LLMs for factual grounding.",
     description:
       "A scalable document intelligence and Retrieval-Augmented Generation pipeline parsing heterogeneous unstructured documents, retrieving context via ChromaDB, and executing private, on-premise extraction with ground-truth verification.",
     highlights: [
@@ -227,14 +246,7 @@ export const skillGroups = [
   },
   {
     label: "Databases & Cloud",
-    items: [
-      "MySQL",
-      "SQLite",
-      "PostgreSQL",
-      "ChromaDB",
-      "Supabase",
-      "Firebase",
-    ],
+    items: ["MySQL", "SQLite", "PostgreSQL", "ChromaDB", "Supabase", "Firebase"],
   },
   {
     label: "DevOps & Tools",
@@ -319,7 +331,13 @@ export const certifications: Certification[] = [
     year: "2023",
     summary:
       "Hands-on mobile application development focusing on Android architecture, lifecycle management, UI components, and RESTful service consumption.",
-    skills: ["Android Development", "Mobile Architecture", "UI Components", "REST APIs", "Application Lifecycle"],
+    skills: [
+      "Android Development",
+      "Mobile Architecture",
+      "UI Components",
+      "REST APIs",
+      "Application Lifecycle",
+    ],
     outcomes: [
       "Engineered mobile user interfaces and interactive components following native guidelines.",
       "Grounded foundational mobile intuition that informs cross-platform and edge AI architectures.",
@@ -332,7 +350,13 @@ export const certifications: Certification[] = [
     year: "2024",
     summary:
       "Professional accreditation in modern project execution, scope tracking, team collaboration, and structured delivery pipelines.",
-    skills: ["Project Charter", "Timeline Planning", "Team Coordination", "Risk Management", "Reporting"],
+    skills: [
+      "Project Charter",
+      "Timeline Planning",
+      "Team Coordination",
+      "Risk Management",
+      "Reporting",
+    ],
     outcomes: [
       "Structured technical deliverables into measurable milestones and risk-managed sprints.",
       "Coordinated cross-functional engineering workflows with async documentation.",
@@ -358,7 +382,13 @@ export const certifications: Certification[] = [
     year: "2024",
     summary:
       "Microsoft curriculum on modern generative AI systems, prompt engineering patterns, safety and ethical guidelines, and enterprise copilot workflows.",
-    skills: ["Generative AI", "Prompt Engineering", "Responsible AI", "Copilot Patterns", "Model Safety"],
+    skills: [
+      "Generative AI",
+      "Prompt Engineering",
+      "Responsible AI",
+      "Copilot Patterns",
+      "Model Safety",
+    ],
     outcomes: [
       "Crafted resilient prompt architectures for structured, repeatable LLM outputs.",
       "Applied safety guardrails, grounding constraints, and hallucination reduction methods.",

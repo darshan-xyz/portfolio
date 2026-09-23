@@ -9,10 +9,7 @@ import * as THREE from "three";
 const scroll = { p: 0 };
 if (typeof window !== "undefined") {
   const update = () => {
-    const max = Math.max(
-      1,
-      document.documentElement.scrollHeight - window.innerHeight,
-    );
+    const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     scroll.p = Math.min(1, Math.max(0, window.scrollY / max));
   };
   update();
@@ -51,12 +48,7 @@ function Terrain() {
   });
 
   return (
-    <mesh
-      ref={meshRef}
-      geometry={geo}
-      rotation={[-Math.PI / 2.2, 0, 0]}
-      position={[0, -2.5, 0]}
-    >
+    <mesh ref={meshRef} geometry={geo} rotation={[-Math.PI / 2.2, 0, 0]} position={[0, -2.5, 0]}>
       <meshBasicMaterial
         color="#7CF9C9"
         wireframe
@@ -98,11 +90,7 @@ function Particles({ count = 220 }: { count?: number }) {
   return (
     <points ref={ref}>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[positions, 3]}
-          count={count}
-        />
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} count={count} />
       </bufferGeometry>
       <pointsMaterial
         color="#B8FF3A"

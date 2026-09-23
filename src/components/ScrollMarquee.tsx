@@ -29,8 +29,7 @@ export function ScrollMarquee() {
       const el = wrap.current;
       if (el) {
         const rect = el.getBoundingClientRect();
-        const progress =
-          1 - (rect.top + rect.height / 2) / (window.innerHeight + rect.height);
+        const progress = 1 - (rect.top + rect.height / 2) / (window.innerHeight + rect.height);
         // shift up to 40% of the track width both directions
         setX((progress - 0.5) * 80);
       }

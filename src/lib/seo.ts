@@ -1,6 +1,6 @@
 export const SITE_URL =
   (typeof process !== "undefined" && process.env?.VITE_SITE_URL) ||
-  (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_SITE_URL) ||
+  import.meta.env?.VITE_SITE_URL ||
   "https://darshan-r.vercel.app";
 
 export const abs = (path: string) => `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;

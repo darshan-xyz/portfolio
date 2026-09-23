@@ -3,7 +3,6 @@ import { certifications, type Certification } from "@/data/portfolio";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { abs, breadcrumbs } from "@/lib/seo";
 
-
 export const Route = createFileRoute("/certifications/$slug")({
   loader: ({ params }): Certification => {
     const cert = certifications.find((c) => c.slug === params.slug);
@@ -108,7 +107,9 @@ function CertDetail() {
             hash="certifications"
             className="group inline-flex items-center gap-3 rounded-full border border-border bg-surface/70 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.35em] text-accent transition-all hover:border-accent hover:bg-accent hover:text-accent-foreground"
           >
-            <span aria-hidden className="transition-transform group-hover:-translate-x-1">←</span>
+            <span aria-hidden className="transition-transform group-hover:-translate-x-1">
+              ←
+            </span>
             Back to credentials
           </Link>
 

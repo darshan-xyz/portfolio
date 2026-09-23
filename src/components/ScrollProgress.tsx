@@ -44,7 +44,9 @@ export function ScrollProgress() {
     };
   }, []);
 
-  const pct = Math.round(p * 100).toString().padStart(2, "0");
+  const pct = Math.round(p * 100)
+    .toString()
+    .padStart(2, "0");
 
   return (
     <aside
@@ -52,9 +54,7 @@ export function ScrollProgress() {
       className="pointer-events-none fixed right-1.5 top-1/2 z-40 hidden -translate-y-1/2 md:block"
     >
       <div className="flex flex-col items-center gap-3">
-        <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-accent">
-          {pct}
-        </span>
+        <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-accent">{pct}</span>
         <div className="relative h-64 w-px bg-border/60">
           <div
             className="absolute left-0 top-0 w-px bg-gradient-to-b from-accent to-accent-2"
@@ -67,9 +67,7 @@ export function ScrollProgress() {
               <span
                 key={s.id}
                 className={`absolute -left-[3px] h-[7px] w-[7px] -translate-y-1/2 rounded-full border transition-all duration-300 ${
-                  isActive
-                    ? "border-accent-2 bg-accent-2 scale-125"
-                    : "border-border bg-background"
+                  isActive ? "border-accent-2 bg-accent-2 scale-125" : "border-border bg-background"
                 }`}
                 style={{
                   top: `${pos}%`,

@@ -20,10 +20,7 @@ type ShardData = {
 const scroll = { p: 0, v: 0 };
 if (typeof window !== "undefined") {
   const update = () => {
-    const max = Math.max(
-      1,
-      document.documentElement.scrollHeight - window.innerHeight,
-    );
+    const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     scroll.p = Math.min(1, Math.max(0, window.scrollY / max));
   };
   update();
@@ -60,10 +57,8 @@ function Shard({ data, geo }: { data: ShardData; geo: THREE.BufferGeometry }) {
     const p = scroll.p;
     // eased scroll for dispersion
     const spread = p * p * 6.0;
-    mesh.current.rotation.x =
-      data.rotation.x + Math.sin(t * data.drift) * 0.25 + p * Math.PI;
-    mesh.current.rotation.y =
-      data.rotation.y + t * data.drift * 0.35 + p * Math.PI * 1.5;
+    mesh.current.rotation.x = data.rotation.x + Math.sin(t * data.drift) * 0.25 + p * Math.PI;
+    mesh.current.rotation.y = data.rotation.y + t * data.drift * 0.35 + p * Math.PI * 1.5;
     mesh.current.rotation.z = data.rotation.z + p * data.drift * 3;
     mesh.current.position.set(
       data.position.x + data.dispersion.x * spread,
@@ -79,12 +74,7 @@ function Shard({ data, geo }: { data: ShardData; geo: THREE.BufferGeometry }) {
     }
   });
   return (
-    <mesh
-      ref={mesh}
-      position={data.position}
-      rotation={data.rotation}
-      scale={data.scale}
-    >
+    <mesh ref={mesh} position={data.position} rotation={data.rotation} scale={data.scale}>
       <primitive object={geo} attach="geometry" />
       <meshStandardMaterial
         color={data.color}
@@ -148,10 +138,7 @@ function Field() {
     return arr;
   }, [mint, lime, teal]);
 
-  const geometries = useMemo(
-    () => shards.map((_, i) => makeShardGeometry(i)),
-    [shards],
-  );
+  const geometries = useMemo(() => shards.map((_, i) => makeShardGeometry(i)), [shards]);
 
   useFrame((state, delta) => {
     if (!group.current) return;
@@ -204,20 +191,8 @@ function CausticGlow() {
   });
   return (
     <>
-      <pointLight
-        ref={l1}
-        position={[3, 2, 4]}
-        color="#7CF9C9"
-        intensity={12}
-        distance={18}
-      />
-      <pointLight
-        ref={l2}
-        position={[-4, -2, 2]}
-        color="#B8FF3A"
-        intensity={6}
-        distance={14}
-      />
+      <pointLight ref={l1} position={[3, 2, 4]} color="#7CF9C9" intensity={12} distance={18} />
+      <pointLight ref={l2} position={[-4, -2, 2]} color="#B8FF3A" intensity={6} distance={14} />
       <ambientLight intensity={0.2} />
     </>
   );

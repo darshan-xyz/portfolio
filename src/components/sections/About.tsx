@@ -1,9 +1,21 @@
 import { Scene3D, LazyCoreScene } from "@/components/ClientOnly";
 
 const PRINCIPLES = [
-  { n: "01", title: "SHIP > POLISH", body: "A model in production teaches more than one in a notebook." },
-  { n: "02", title: "EXPLAIN > IMPRESS", body: "SHAP, attention maps, honest metrics. Trust before flash." },
-  { n: "03", title: "AGENTS > SCRIPTS", body: "Composable LangGraph flows and tool-using LLMs that reason." },
+  {
+    n: "01",
+    title: "SHIP > POLISH",
+    body: "A model in production teaches more than one in a notebook.",
+  },
+  {
+    n: "02",
+    title: "EXPLAIN > IMPRESS",
+    body: "SHAP, attention maps, honest metrics. Trust before flash.",
+  },
+  {
+    n: "03",
+    title: "AGENTS > SCRIPTS",
+    body: "Composable LangGraph flows and tool-using LLMs that reason.",
+  },
   { n: "04", title: "DESIGN > DECORATE", body: "The best model dies without a UI a human trusts." },
 ];
 
@@ -22,10 +34,9 @@ export function AboutSection() {
           {/* Manifesto quote — large */}
           <div className="relative col-span-12 flex min-h-[320px] flex-col justify-between overflow-hidden border-l-2 border-accent-2 bg-surface/40 p-8 backdrop-blur-md md:p-12 lg:col-span-8">
             <blockquote className="font-display text-2xl font-medium leading-[1.2] tracking-tight md:text-3xl">
-              I engineer{" "}
-              <span className="text-accent">production-grade AI solutions</span> —
-              from real-time computer vision pipelines and RAG systems to multi-agent
-              workflows that solve complex enterprise problems.
+              I engineer <span className="text-accent">production-grade AI solutions</span> — from
+              real-time computer vision pipelines and RAG systems to multi-agent workflows that
+              solve complex enterprise problems.
             </blockquote>
             <div className="mt-8 flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               <span className="border border-border px-3 py-1">B.E CSE · SREC</span>
@@ -40,8 +51,7 @@ export function AboutSection() {
               aria-hidden
               className="absolute inset-0 opacity-40"
               style={{
-                background:
-                  "radial-gradient(circle at 50% 50%, var(--accent), transparent 60%)",
+                background: "radial-gradient(circle at 50% 50%, var(--accent), transparent 60%)",
                 filter: "blur(30px)",
               }}
             />
@@ -63,10 +73,7 @@ export function AboutSection() {
 
           {/* Principles as bento tiles */}
           {PRINCIPLES.map((p, i) => {
-            const span =
-              i === 0 || i === 3
-                ? "lg:col-span-7"
-                : "lg:col-span-5";
+            const span = i === 0 || i === 3 ? "lg:col-span-7" : "lg:col-span-5";
             return (
               <div
                 key={p.n}
@@ -76,9 +83,7 @@ export function AboutSection() {
                   <span className="font-mono text-[10px] uppercase tracking-widest text-accent">
                     PRINCIPLE_{p.n}
                   </span>
-                  <span className="font-display text-3xl font-bold text-accent-2/40">
-                    {p.n}
-                  </span>
+                  <span className="font-display text-3xl font-bold text-accent-2/40">{p.n}</span>
                 </div>
                 <h3 className="mt-3 font-display text-xl font-bold uppercase tracking-tight text-foreground">
                   {p.title}

@@ -38,8 +38,7 @@ export function SiteBackground() {
       <div
         className="absolute inset-0"
         style={{
-          background:
-            "radial-gradient(ellipse at 50% 30%, transparent 0%, var(--background) 85%)",
+          background: "radial-gradient(ellipse at 50% 30%, transparent 0%, var(--background) 85%)",
         }}
       />
     </div>

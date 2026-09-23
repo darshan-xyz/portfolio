@@ -98,13 +98,7 @@ function ParticleField() {
 
   return (
     <points ref={ref} geometry={geom}>
-      <pointsMaterial
-        size={0.015}
-        color="#9fd9ff"
-        transparent
-        opacity={0.55}
-        depthWrite={false}
-      />
+      <pointsMaterial size={0.015} color="#9fd9ff" transparent opacity={0.55} depthWrite={false} />
     </points>
   );
 }

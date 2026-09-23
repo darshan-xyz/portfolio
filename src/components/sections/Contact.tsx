@@ -71,7 +71,9 @@ export function ContactSection() {
             </span>
           </div>
           <div className="text-muted-foreground">
-            <div><span className="text-accent-2">{"{"}</span></div>
+            <div>
+              <span className="text-accent-2">{"{"}</span>
+            </div>
             {SOCIALS.map((s, i) => (
               <div key={s.label} className="min-w-0 pl-4">
                 <a
@@ -82,7 +84,9 @@ export function ContactSection() {
                 >
                   <span className="text-accent">"{s.label}"</span>
                   <span className="text-muted-foreground">:</span>
-                  <span className="truncate text-foreground group-hover:text-accent">"{s.value}"</span>
+                  <span className="truncate text-foreground group-hover:text-accent">
+                    "{s.value}"
+                  </span>
                   {i < SOCIALS.length - 1 && <span className="text-muted-foreground">,</span>}
                 </a>
               </div>
@@ -183,7 +187,6 @@ export function ContactSection() {
             </div>
           </div>
         </form>
-
       </div>
     </section>
   );

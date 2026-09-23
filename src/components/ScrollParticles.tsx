@@ -74,7 +74,13 @@ export function ScrollParticles() {
         p.x += p.vx;
         p.y += p.vy + Math.sin((p.life + p.x) * 0.02) * 0.15 * dpr;
         p.life += 1;
-        if (p.life > p.max || p.x < -20 || p.x > cvs.width + 20 || p.y < -20 || p.y > cvs.height + 20) {
+        if (
+          p.life > p.max ||
+          p.x < -20 ||
+          p.x > cvs.width + 20 ||
+          p.y < -20 ||
+          p.y > cvs.height + 20
+        ) {
           if (p.max !== Infinity) {
             particles.splice(i, 1);
             continue;
@@ -85,8 +91,7 @@ export function ScrollParticles() {
           if (p.y < -20) p.y = cvs.height + 20;
           if (p.y > cvs.height + 20) p.y = -20;
         }
-        const alpha =
-          p.max === Infinity ? 0.35 : Math.max(0, 1 - p.life / p.max) * 0.85;
+        const alpha = p.max === Infinity ? 0.35 : Math.max(0, 1 - p.life / p.max) * 0.85;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(124, 249, 201, ${alpha})`;

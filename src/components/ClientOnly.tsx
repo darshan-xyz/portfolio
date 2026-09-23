@@ -1,7 +1,13 @@
 import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 import { useMotionState } from "@/hooks/use-motion";
 
-export function ClientOnly({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
+export function ClientOnly({
+  children,
+  fallback = null,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   if (!mounted) return <>{fallback}</>;

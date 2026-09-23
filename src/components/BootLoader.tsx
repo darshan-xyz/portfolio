@@ -88,7 +88,6 @@ export function BootLoader() {
     }
   }, [progress, stepIdx, phase]);
 
-
   useEffect(() => {
     if (phase !== "gone") document.documentElement.style.overflow = "hidden";
     else document.documentElement.style.overflow = "";
@@ -171,12 +170,14 @@ export function BootLoader() {
                 style={{ boxShadow: "0 0 12px var(--accent-2)" }}
               />
               Explore Portfolio
-              <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+              <span aria-hidden className="transition-transform group-hover:translate-x-1">
+                →
+              </span>
             </button>
           )}
         </div>
         <div className="relative border-t border-border/60 px-6 py-3 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground md:px-10">
-            <span className="text-accent-2">◉</span> READY_FOR_DEPLOYMENT · DARSHAN.R
+          <span className="text-accent-2">◉</span> READY_FOR_DEPLOYMENT · DARSHAN.R
         </div>
         <style>{`
           .intro-name {
@@ -246,7 +247,8 @@ export function BootLoader() {
             </div>
           </div>
           <div className="relative border-t border-border/60 px-6 py-3 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground md:px-10">
-            <span className="text-accent">■</span> AI_ENGINEER · GEN_AI · VISION · AGENTIC · DARSHAN.R
+            <span className="text-accent">■</span> AI_ENGINEER · GEN_AI · VISION · AGENTIC ·
+            DARSHAN.R
           </div>
         </div>
       )}

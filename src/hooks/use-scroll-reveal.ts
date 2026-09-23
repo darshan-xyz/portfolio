@@ -61,7 +61,6 @@ export function useScrollReveal<T extends HTMLElement>(): RefObject<T | null> {
   return ref;
 }
 
-
 /** Track vertical scroll velocity (px/frame) for particle emitter. */
 export function useScrollVelocity() {
   const [v, setV] = useState(0);

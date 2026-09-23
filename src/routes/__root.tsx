@@ -15,8 +15,6 @@ import { BootLoader } from "../components/BootLoader";
 import { prefetchScenes } from "../components/ClientOnly";
 import { SITE_URL } from "../lib/seo";
 
-
-
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -128,7 +126,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
-
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
