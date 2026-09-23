@@ -61,7 +61,7 @@ function contentSecurityPolicy(): string {
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-    "frame-ancestors 'self' https://*.lovable.app https://*.lovable.dev https://lovable.dev",
+    "frame-ancestors 'self'",
     "upgrade-insecure-requests",
   ].join("; ");
 }
