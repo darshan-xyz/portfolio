@@ -14,6 +14,7 @@ import { SiteBackground } from "../components/SiteBackground";
 import { BootLoader } from "../components/BootLoader";
 import { prefetchScenes } from "../components/ClientOnly";
 import { SITE_URL } from "../lib/seo";
+import { initTelemetry } from "../lib/telemetry/client-sdk";
 
 function NotFoundComponent() {
   return (
@@ -148,6 +149,7 @@ function RootComponent() {
   // transition so navigation never re-suspends behind the loading veil.
   useEffect(() => {
     prefetchScenes();
+    initTelemetry();
   }, []);
 
   return (

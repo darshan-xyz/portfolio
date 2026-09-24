@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ActivitiesSlugRouteImport } from './routes/activities.$slug'
+import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
 import { Route as CertificationsSlugRouteImport } from './routes/certifications.$slug'
 import { Route as ExperienceSlugRouteImport } from './routes/experience.$slug'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
@@ -29,6 +30,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ActivitiesSlugRoute = ActivitiesSlugRouteImport.update({
   id: '/activities/$slug',
   path: '/activities/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTelemetryRoute = ApiTelemetryRouteImport.update({
+  id: '/api/telemetry',
+  path: '/api/telemetry',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CertificationsSlugRoute = CertificationsSlugRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/activities/$slug': typeof ActivitiesSlugRoute
+  '/api/telemetry': typeof ApiTelemetryRoute
   '/certifications/$slug': typeof CertificationsSlugRoute
   '/experience/$slug': typeof ExperienceSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/activities/$slug': typeof ActivitiesSlugRoute
+  '/api/telemetry': typeof ApiTelemetryRoute
   '/certifications/$slug': typeof CertificationsSlugRoute
   '/experience/$slug': typeof ExperienceSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/activities/$slug': typeof ActivitiesSlugRoute
+  '/api/telemetry': typeof ApiTelemetryRoute
   '/certifications/$slug': typeof CertificationsSlugRoute
   '/experience/$slug': typeof ExperienceSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/sitemap.xml'
     | '/activities/$slug'
+    | '/api/telemetry'
     | '/certifications/$slug'
     | '/experience/$slug'
     | '/projects/$slug'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/sitemap.xml'
     | '/activities/$slug'
+    | '/api/telemetry'
     | '/certifications/$slug'
     | '/experience/$slug'
     | '/projects/$slug'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/sitemap.xml'
     | '/activities/$slug'
+    | '/api/telemetry'
     | '/certifications/$slug'
     | '/experience/$slug'
     | '/projects/$slug'
@@ -103,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ActivitiesSlugRoute: typeof ActivitiesSlugRoute
+  ApiTelemetryRoute: typeof ApiTelemetryRoute
   CertificationsSlugRoute: typeof CertificationsSlugRoute
   ExperienceSlugRoute: typeof ExperienceSlugRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
@@ -129,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/activities/$slug'
       fullPath: '/activities/$slug'
       preLoaderRoute: typeof ActivitiesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/telemetry': {
+      id: '/api/telemetry'
+      path: '/api/telemetry'
+      fullPath: '/api/telemetry'
+      preLoaderRoute: typeof ApiTelemetryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/certifications/$slug': {
@@ -159,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ActivitiesSlugRoute: ActivitiesSlugRoute,
+  ApiTelemetryRoute: ApiTelemetryRoute,
   CertificationsSlugRoute: CertificationsSlugRoute,
   ExperienceSlugRoute: ExperienceSlugRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
