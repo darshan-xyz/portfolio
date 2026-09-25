@@ -39,42 +39,6 @@ export const Route = createFileRoute("/api/telemetry")({
           const rawUserAgent = request.headers.get("user-agent") || "";
           const isBot = isbot(rawUserAgent);
 
-          // Geolocation from CDN / edge headers
-          const countryCode =
-            request.headers.get("cf-ipcountry") ||
-            request.headers.get("x-vercel-ip-country") ||
-            "US";
-          const city =
-            request.headers.get("cf-ipcity") ||
-            request.headers.get("x-vercel-ip-city") ||
-            "Unknown";
-          const region =
-            request.headers.get("cf-region") ||
-            request.headers.get("x-vercel-ip-country-region") ||
-            "Unknown";
-          const latStr = request.headers.get("x-vercel-ip-latitude");
-          const lonStr = request.headers.get("x-vercel-ip-longitude");
-          const latitude = latStr ? parseFloat(latStr) : null;
-          const longitude = lonStr ? parseFloat(lonStr) : null;
-
-          // ASN lookup from headers
-          const asnHeader =
-            request.headers.get("cf-as-number") ||
-            request.headers.get("x-vercel-ip-as-number") ||
-            "";
-          const asnNumber = asnHeader.replace(/\D/g, "");
-          const matchedCompany = KNOWN_TECH_ASNS[asnNumber] || null;
-
-          // Device & Browser parser
-          const uaParsed = new UAParser(rawUserAgent).getResult();
-          const deviceType = isBot
-            ? "bot"
-            : uaParsed.device.type === "mobile"
-              ? "mobile"
-              : uaParsed.device.type === "tablet"
-                ? "tablet"
-                : "desktop";
-
           const body = (await request.json().catch(() => null)) as TelemetryBatchPayload | null;
           if (!body || !body.sessionToken) {
             return new Response(JSON.stringify({ error: "Invalid payload" }), {
@@ -82,6 +46,88 @@ export const Route = createFileRoute("/api/telemetry")({
               headers: { "Content-Type": "application/json" },
             });
           }
+
+          const isLocal =
+            rawIp === "127.0.0.1" ||
+            rawIp === "::1" ||
+            rawIp.startsWith("192.168.") ||
+            rawIp.startsWith("10.") ||
+            rawIp.startsWith("172.");
+
+          // ASN & Corporate Network mapping
+          const asnHeader =
+            request.headers.get("cf-as-number") || request.headers.get("x-vercel-ip-as-number");
+          const asnNumber = asnHeader ? parseInt(asnHeader, 10).toString() : null;
+          const matchedCompany =
+            asnNumber && KNOWN_TECH_ASNS[asnNumber] ? KNOWN_TECH_ASNS[asnNumber] : null;
+
+          // Geolocation from CDN / edge headers with smart client-hint fallbacks
+          const edgeCountry =
+            request.headers.get("cf-ipcountry") || request.headers.get("x-vercel-ip-country");
+          const edgeCity =
+            request.headers.get("cf-ipcity") || request.headers.get("x-vercel-ip-city");
+          const edgeRegion =
+            request.headers.get("cf-region") || request.headers.get("x-vercel-ip-country-region");
+
+          let countryCode = "IN";
+          let city = "Local / Coimbatore";
+          let region = "Development";
+          let companyOrg = matchedCompany;
+
+          if (isLocal) {
+            countryCode = body.device?.inferredCountryCode || "IN";
+            city = body.device?.inferredCity || "Local Dev";
+            region = "Localhost Network";
+            companyOrg = "Localhost / Developer Station";
+          } else if (edgeCountry) {
+            countryCode = edgeCountry;
+            city =
+              edgeCity && edgeCity !== "Unknown"
+                ? edgeCity
+                : body.device?.inferredCity || "Detected City";
+            region = edgeRegion || "";
+            companyOrg =
+              matchedCompany || (asnHeader ? `ASN ${asnNumber}` : "Internet Service Provider");
+          } else if (body.device?.inferredCountryCode) {
+            countryCode = body.device.inferredCountryCode;
+            city = body.device.inferredCity || "Detected Location";
+            region = body.device.timeZone || "";
+            companyOrg = matchedCompany || "Direct Connection";
+          }
+
+          const latStr = request.headers.get("x-vercel-ip-latitude");
+          const lonStr = request.headers.get("x-vercel-ip-longitude");
+          const latitude = latStr ? parseFloat(latStr) : null;
+          const longitude = lonStr ? parseFloat(lonStr) : null;
+
+          // Device & Browser parser merging client hints with server UA
+          const uaParsed = new UAParser(rawUserAgent).getResult();
+          const deviceType = isBot
+            ? "bot"
+            : body.device?.deviceCategory ||
+              (uaParsed.device.type === "mobile"
+                ? "mobile"
+                : uaParsed.device.type === "tablet"
+                  ? "tablet"
+                  : "desktop");
+
+          const osDisplayName =
+            body.device?.osName && body.device.osName !== "Unknown OS"
+              ? body.device.osVersion
+                ? `${body.device.osName} ${body.device.osVersion}`
+                : body.device.osName
+              : uaParsed.os.name
+                ? `${uaParsed.os.name} ${uaParsed.os.version || ""}`.trim()
+                : "Unknown OS";
+
+          const browserDisplayName =
+            body.device?.browserName && body.device.browserName !== "Browser"
+              ? body.device.browserVersion
+                ? `${body.device.browserName} ${body.device.browserVersion}`
+                : body.device.browserName
+              : uaParsed.browser.name
+                ? `${uaParsed.browser.name} ${uaParsed.browser.version || ""}`.trim()
+                : "Unknown Browser";
 
           const hasResume = body.events.some((e) => e.eventName === "resume_download");
           const hasContact = body.events.some((e) => e.eventName === "contact_copy");
@@ -96,12 +142,12 @@ export const Route = createFileRoute("/api/telemetry")({
             latitude,
             longitude,
             asn_number: asnNumber || null,
-            asn_org: matchedCompany,
+            asn_org: companyOrg,
             device_type: deviceType,
-            os_name: uaParsed.os.name || "Unknown",
-            os_version: uaParsed.os.version || "",
-            browser_name: uaParsed.browser.name || "Unknown",
-            browser_version: uaParsed.browser.version || "",
+            os_name: osDisplayName,
+            os_version: body.device?.osVersion || uaParsed.os.version || "",
+            browser_name: browserDisplayName,
+            browser_version: body.device?.browserVersion || uaParsed.browser.version || "",
             gpu_vendor: body.device?.gpuVendor || null,
             gpu_renderer: body.device?.gpuRenderer || null,
             screen_width: body.device?.screenWidth || 0,
@@ -131,14 +177,25 @@ export const Route = createFileRoute("/api/telemetry")({
             city,
             region,
             asnNumber: asnNumber || null,
-            asnOrg: matchedCompany,
+            asnOrg: companyOrg,
             deviceType,
-            os: uaParsed.os.name || "Unknown",
-            browser: uaParsed.browser.name || "Unknown",
+            os: osDisplayName,
+            browser: browserDisplayName,
             gpuRenderer: body.device?.gpuRenderer || null,
             screenWidth: body.device?.screenWidth || 0,
             screenHeight: body.device?.screenHeight || 0,
+            devicePixelRatio: body.device?.devicePixelRatio || 1,
+            hasTouch: body.device?.hasTouch || false,
+            orientation:
+              body.device?.orientation ||
+              (body.device?.screenWidth >= body.device?.screenHeight ? "landscape" : "portrait"),
             referrer: body.referrer || null,
+            acquisitionChannel: body.device?.acquisitionChannel || "direct",
+            acquisitionLabel:
+              body.device?.acquisitionLabel ||
+              (body.referrer ? `Referral: ${body.referrer}` : "Direct Visit"),
+            navigationType: body.device?.navigationType || "navigate",
+            landingPage: body.device?.landingPage || body.events[0]?.path || "/",
             utmSource: body.utm?.source || null,
             utmCampaign: body.utm?.campaign || null,
             activeDwellSeconds: body.activeDwellSeconds || 0,
@@ -149,32 +206,38 @@ export const Route = createFileRoute("/api/telemetry")({
           });
 
           // Asynchronously persist to Supabase if available
-          const supabase = createServerSupabaseClient();
-          supabase
-            .from("analytics_sessions")
-            .upsert(sessionRecord, { onConflict: "session_token" })
-            .select("id")
-            .single()
-            .then(async ({ data: sessionData, error }) => {
-              if (error || !sessionData?.id) return;
+          try {
+            const supabase = createServerSupabaseClient();
+            if (supabase) {
+              supabase
+                .from("analytics_sessions")
+                .upsert(sessionRecord, { onConflict: "session_token" })
+                .select("id")
+                .single()
+                .then(async ({ data: sessionData, error }) => {
+                  if (error || !sessionData?.id) return;
 
-              const eventsToInsert = body.events.map((e) => ({
-                session_id: sessionData.id,
-                event_name: e.eventName,
-                page_path: e.path,
-                section_id: e.sectionId || null,
-                payload: e.payload || {},
-                dwell_increment_seconds: e.dwellIncrementSeconds || 0,
-                created_at: e.timestamp || new Date().toISOString(),
-              }));
+                  const eventsToInsert = body.events.map((e) => ({
+                    session_id: sessionData.id,
+                    event_name: e.eventName,
+                    page_path: e.path,
+                    section_id: e.sectionId || null,
+                    payload: e.payload || {},
+                    dwell_increment_seconds: e.dwellIncrementSeconds || 0,
+                    created_at: e.timestamp || new Date().toISOString(),
+                  }));
 
-              if (eventsToInsert.length > 0) {
-                await supabase.from("analytics_events").insert(eventsToInsert);
-              }
-            })
-            .catch(() => {
-              // Non-blocking fail-safe
-            });
+                  if (eventsToInsert.length > 0) {
+                    await supabase.from("analytics_events").insert(eventsToInsert);
+                  }
+                })
+                .catch(() => {
+                  // Non-blocking fail-safe
+                });
+            }
+          } catch {
+            // Supabase offline fail-safe
+          }
 
           return new Response(JSON.stringify({ status: "recorded", buffered: true }), {
             status: 200,
@@ -183,7 +246,8 @@ export const Route = createFileRoute("/api/telemetry")({
               "Access-Control-Allow-Origin": "*",
             },
           });
-        } catch {
+        } catch (err) {
+          console.error("[TELEMETRY ROUTE ERROR]:", err);
           // Never let analytics ingestion fail with a 500 error
           return new Response(JSON.stringify({ status: "acknowledged" }), {
             status: 200,

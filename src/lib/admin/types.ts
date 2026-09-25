@@ -15,7 +15,15 @@ export interface VisitorSessionRecord {
   gpuRenderer?: string;
   screenWidth: number;
   screenHeight: number;
+  devicePixelRatio: number;
+  hasTouch: boolean;
+  orientation: "landscape" | "portrait";
   referrer: string;
+  acquisitionChannel:
+    "direct" | "search" | "social" | "referral" | "email" | "campaign" | "redirect";
+  acquisitionLabel: string;
+  navigationType: string;
+  landingPage: string;
   utmSource?: string;
   utmCampaign?: string;
   activeDwellSeconds: number;
@@ -77,6 +85,12 @@ export interface AdminDashboardData {
     code: string;
     city: string;
     visits: number;
+    percent: number;
+  }>;
+  acquisitionBreakdown: Array<{
+    channel: "direct" | "search" | "social" | "referral" | "email" | "campaign" | "redirect";
+    label: string;
+    count: number;
     percent: number;
   }>;
   visitors: VisitorSessionRecord[];

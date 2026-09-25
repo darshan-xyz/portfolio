@@ -1,4 +1,21 @@
-import { Users, Eye, Clock, Download, Building2, TrendingUp, Globe, Monitor } from "lucide-react";
+import {
+  Users,
+  Eye,
+  Clock,
+  Download,
+  Building2,
+  TrendingUp,
+  Globe,
+  Monitor,
+  Compass,
+  Search,
+  Share2,
+  Link2,
+  Mail,
+  ExternalLink,
+  ArrowRightCircle,
+  Radio,
+} from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -28,8 +45,33 @@ const DEVICE_COLORS: Record<string, string> = {
   Bot: "#64748b",
 };
 
+const CHANNEL_CONFIG: Record<
+  string,
+  { label: string; color: string; icon: React.ComponentType<{ className?: string }> }
+> = {
+  direct: { label: "Direct (URL Typed / Bookmark)", color: "#38bdf8", icon: Compass },
+  search: { label: "Organic Search Engines", color: "#7CF9C9", icon: Search },
+  social: { label: "Social Media (LinkedIn, GitHub, X)", color: "#c084fc", icon: Share2 },
+  referral: { label: "External Web Referrals", color: "#2dd4bf", icon: Link2 },
+  email: { label: "Email / Direct Campaigns", color: "#fbbf24", icon: Mail },
+  campaign: { label: "Marketing Campaigns", color: "#f43f5e", icon: ExternalLink },
+  redirect: { label: "Redirects & QR Codes", color: "#818cf8", icon: ArrowRightCircle },
+};
+
 export function OverviewTab({ data }: OverviewTabProps) {
-  const { stats, trafficSeries, topPages, deviceBreakdown, geoBreakdown } = data;
+  const {
+    stats,
+    trafficSeries,
+    topPages,
+    deviceBreakdown,
+    geoBreakdown,
+    acquisitionBreakdown = [],
+  } = data;
+
+  const conversionRate =
+    stats.uniqueVisitors > 0
+      ? ((stats.resumeDownloads / stats.uniqueVisitors) * 100).toFixed(1)
+      : "0.0";
 
   return (
     <div className="space-y-6">
@@ -95,9 +137,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
             <div className="text-2xl font-bold tracking-tight text-white">
               {stats.resumeDownloads}
             </div>
-            <div className="mt-1 text-xs text-[#B8FF3A]">
-              {((stats.resumeDownloads / stats.uniqueVisitors) * 100).toFixed(1)}% conversion rate
-            </div>
+            <div className="mt-1 text-xs text-[#B8FF3A]">{conversionRate}% conversion rate</div>
           </CardContent>
         </Card>
 
@@ -112,20 +152,24 @@ export function OverviewTab({ data }: OverviewTabProps) {
             <div className="text-2xl font-bold tracking-tight text-white">
               {stats.targetCompanyVisits}
             </div>
-            <div className="mt-1 text-xs text-purple-300">Google, Microsoft, Amazon, Meta</div>
+            <div className="mt-1 text-xs text-purple-300">
+              {stats.targetCompanyVisits > 0
+                ? "Target enterprise ASN identified"
+                : "Awaiting verified enterprise ASNs"}
+            </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Primary Chart: Traffic Over Time */}
       <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between pb-2">
           <div>
             <CardTitle className="font-mono text-sm text-white">
-              TRAFFIC & ENGAGEMENT METRICS (LAST 7 DAYS)
+              REAL-TIME TRAFFIC & ENGAGEMENT METRICS (LAST 7 DAYS)
             </CardTitle>
             <p className="text-xs text-white/50">
-              Daily pageviews vs unique visitors with resume download correlation
+              Genuine daily pageviews vs unique visitors with resume download correlation
             </p>
           </div>
           <div className="flex items-center gap-4 text-xs font-mono">
@@ -198,9 +242,11 @@ export function OverviewTab({ data }: OverviewTabProps) {
         <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md lg:col-span-2">
           <CardHeader>
             <CardTitle className="font-mono text-sm text-white">
-              TOP VISITED PROJECTS & CASE STUDIES
+              TOP VISITED PORTFOLIO SECTIONS & ROUTES
             </CardTitle>
-            <p className="text-xs text-white/50">Ranked by total views and average dwell time</p>
+            <p className="text-xs text-white/50">
+              Ranked by real visitor interactions and dwell time
+            </p>
           </CardHeader>
           <CardContent>
             {topPages.length === 0 ? (
@@ -251,9 +297,9 @@ export function OverviewTab({ data }: OverviewTabProps) {
           <CardHeader>
             <CardTitle className="font-mono text-sm text-white flex items-center gap-2">
               <Monitor className="h-4 w-4 text-[#7CF9C9]" />
-              DEVICE PROFILES
+              VERIFIED DEVICE PROFILES
             </CardTitle>
-            <p className="text-xs text-white/50">Desktop vs Mobile vs Tablet</p>
+            <p className="text-xs text-white/50">Desktop vs Mobile vs Tablet vs Bot</p>
           </CardHeader>
           <CardContent>
             <div className="relative h-44 w-full">
@@ -301,6 +347,81 @@ export function OverviewTab({ data }: OverviewTabProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Traffic Acquisition & Inbound Pathways Section */}
+      <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">
+        <CardHeader>
+          <CardTitle className="font-mono text-sm text-white flex items-center gap-2">
+            <Radio className="h-4 w-4 text-cyan-400" />
+            ACQUISITION & VISITOR DISCOVERY PATHWAYS
+          </CardTitle>
+          <p className="text-xs text-white/50">
+            Exact entry channels, search discovery, social networks, and referral origins
+          </p>
+        </CardHeader>
+        <CardContent>
+          {acquisitionBreakdown.length === 0 ? (
+            <div className="py-8 text-center font-mono text-xs text-white/40">
+              No acquisition pathways recorded yet. Inbound visitor channels will appear here.
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {acquisitionBreakdown.map((item) => {
+                  const conf = CHANNEL_CONFIG[item.channel] || {
+                    label: item.label,
+                    color: "#94a3b8",
+                    icon: Compass,
+                  };
+                  const Icon = conf.icon;
+                  return (
+                    <div
+                      key={item.channel}
+                      className="rounded-xl border border-white/5 bg-white/[0.02] p-3.5 space-y-2.5"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="flex h-7 w-7 items-center justify-center rounded-lg"
+                            style={{
+                              backgroundColor: `${conf.color}15`,
+                              color: conf.color,
+                            }}
+                          >
+                            <Icon className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <span className="font-medium text-xs text-white block">
+                              {conf.label}
+                            </span>
+                            <span className="text-[10px] text-white/40 font-mono">
+                              Channel: {item.channel}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-mono text-sm font-bold text-white">{item.count}</div>
+                          <div className="text-[10px] font-mono text-white/50">{item.percent}%</div>
+                        </div>
+                      </div>
+
+                      <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${Math.max(4, item.percent)}%`,
+                            backgroundColor: conf.color,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Global Geolocation Leaderboard */}
       <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">

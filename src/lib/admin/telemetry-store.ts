@@ -1,6 +1,24 @@
 import type { AdminDashboardData, CrmInquiryRecord, VisitorSessionRecord } from "./types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
+const COUNTRY_NAMES: Record<string, string> = {
+  IN: "India",
+  US: "United States",
+  GB: "United Kingdom",
+  CA: "Canada",
+  DE: "Germany",
+  FR: "France",
+  NL: "Netherlands",
+  SG: "Singapore",
+  JP: "Japan",
+  AU: "Australia",
+  AE: "United Arab Emirates",
+  BR: "Brazil",
+  SE: "Sweden",
+  CH: "Switzerland",
+  IE: "Ireland",
+};
+
 interface StoredSession {
   id: string;
   sessionToken: string;
@@ -19,7 +37,15 @@ interface StoredSession {
   gpuRenderer?: string;
   screenWidth: number;
   screenHeight: number;
+  devicePixelRatio: number;
+  hasTouch: boolean;
+  orientation: "landscape" | "portrait";
   referrer: string;
+  acquisitionChannel:
+    "direct" | "search" | "social" | "referral" | "email" | "campaign" | "redirect";
+  acquisitionLabel: string;
+  navigationType: string;
+  landingPage: string;
   utmSource?: string;
   utmCampaign?: string;
   activeDwellSeconds: number;
@@ -37,9 +63,17 @@ interface StoredSession {
   }>;
 }
 
-// Global in-memory storage on server
-const sessionsMap = new Map<string, StoredSession>();
-const inquiriesList: CrmInquiryRecord[] = [];
+// Global in-memory storage on server (attached to globalThis for Vite SSR singleton stability)
+interface TelemetryGlobalScope {
+  __sessionsMap?: Map<string, StoredSession>;
+  __inquiriesList?: CrmInquiryRecord[];
+  __auditLogsList?: AuditLogEntry[];
+}
+
+const globalForTelemetry = globalThis as unknown as TelemetryGlobalScope;
+
+const sessionsMap = (globalForTelemetry.__sessionsMap ??= new Map<string, StoredSession>());
+const inquiriesList = (globalForTelemetry.__inquiriesList ??= []);
 
 // Audit logs
 export interface AuditLogEntry {
@@ -51,7 +85,7 @@ export interface AuditLogEntry {
   time: string;
 }
 
-const auditLogsList: AuditLogEntry[] = [
+const auditLogsList = (globalForTelemetry.__auditLogsList ??= [
   {
     id: "aud-init",
     action: "system.live_store_ready",
@@ -60,7 +94,7 @@ const auditLogsList: AuditLogEntry[] = [
     ip: "127.0.0.1",
     time: new Date().toLocaleTimeString(),
   },
-];
+]);
 
 export function recordAuditLog(
   action: string,
@@ -96,11 +130,18 @@ export function recordSession(sessionData: {
   asnOrg?: string | null;
   deviceType: "desktop" | "mobile" | "tablet" | "bot";
   os: string;
-  browser: string;
   gpuRenderer?: string | null;
   screenWidth: number;
   screenHeight: number;
+  devicePixelRatio?: number;
+  hasTouch?: boolean;
+  orientation?: "landscape" | "portrait";
   referrer?: string | null;
+  acquisitionChannel?:
+    "direct" | "search" | "social" | "referral" | "email" | "campaign" | "redirect";
+  acquisitionLabel?: string | null;
+  navigationType?: string | null;
+  landingPage?: string | null;
   utmSource?: string | null;
   utmCampaign?: string | null;
   activeDwellSeconds: number;
@@ -160,7 +201,7 @@ export function recordSession(sessionData: {
       visitorHash: sessionData.visitorHash,
       ip: sessionData.rawIp,
       countryCode: sessionData.countryCode || "UNKNOWN",
-      countryName: sessionData.countryCode || "Unknown",
+      countryName: COUNTRY_NAMES[sessionData.countryCode] || sessionData.countryCode || "Unknown",
       city: sessionData.city || "Local",
       region: sessionData.region || "",
       asnNumber: sessionData.asnNumber || undefined,
@@ -172,7 +213,18 @@ export function recordSession(sessionData: {
       gpuRenderer: sessionData.gpuRenderer || undefined,
       screenWidth: sessionData.screenWidth,
       screenHeight: sessionData.screenHeight,
+      devicePixelRatio: sessionData.devicePixelRatio || 1,
+      hasTouch: sessionData.hasTouch ?? false,
+      orientation:
+        sessionData.orientation ||
+        (sessionData.screenWidth >= sessionData.screenHeight ? "landscape" : "portrait"),
       referrer: sessionData.referrer || "Direct",
+      acquisitionChannel: sessionData.acquisitionChannel || "direct",
+      acquisitionLabel:
+        sessionData.acquisitionLabel ||
+        (sessionData.referrer ? `Referral: ${sessionData.referrer}` : "Direct Visit"),
+      navigationType: sessionData.navigationType || "navigate",
+      landingPage: sessionData.landingPage || sessionData.events[0]?.path || "/",
       utmSource: sessionData.utmSource || undefined,
       utmCampaign: sessionData.utmCampaign || undefined,
       activeDwellSeconds: sessionData.activeDwellSeconds,
@@ -391,6 +443,35 @@ export function getLiveDashboardData(): AdminDashboardData {
       percent: uniqueVisitors > 0 ? Math.round((g.visits / uniqueVisitors) * 100) : 0,
     }));
 
+  // Build acquisition breakdown
+  const channelCounts: Record<string, { label: string; count: number }> = {
+    direct: { label: "Direct (Typed / Bookmark)", count: 0 },
+    search: { label: "Search Engines (Organic)", count: 0 },
+    social: { label: "Social Media (LinkedIn / GitHub / X)", count: 0 },
+    referral: { label: "External Web Referrals", count: 0 },
+    email: { label: "Email / Direct Links", count: 0 },
+    campaign: { label: "Campaign / Paid Ads", count: 0 },
+    redirect: { label: "Redirects & QR Codes", count: 0 },
+  };
+
+  for (const s of sessions) {
+    const ch = s.acquisitionChannel || "direct";
+    if (!channelCounts[ch]) {
+      channelCounts[ch] = { label: s.acquisitionLabel || ch, count: 0 };
+    }
+    channelCounts[ch].count++;
+  }
+
+  const acquisitionBreakdown = Object.entries(channelCounts)
+    .filter(([_, v]) => v.count > 0 || uniqueVisitors === 0)
+    .map(([k, v]) => ({
+      channel: k as AdminDashboardData["acquisitionBreakdown"][number]["channel"],
+      label: v.label,
+      count: v.count,
+      percent: uniqueVisitors > 0 ? Math.round((v.count / uniqueVisitors) * 100) : 0,
+    }))
+    .sort((a, b) => b.count - a.count);
+
   // Build visitor sessions list
   const visitorsList: VisitorSessionRecord[] = sessions
     .sort((a, b) => b.lastActiveAt - a.lastActiveAt)
@@ -420,7 +501,14 @@ export function getLiveDashboardData(): AdminDashboardData {
         gpuRenderer: s.gpuRenderer,
         screenWidth: s.screenWidth,
         screenHeight: s.screenHeight,
+        devicePixelRatio: s.devicePixelRatio,
+        hasTouch: s.hasTouch,
+        orientation: s.orientation,
         referrer: s.referrer,
+        acquisitionChannel: s.acquisitionChannel,
+        acquisitionLabel: s.acquisitionLabel,
+        navigationType: s.navigationType,
+        landingPage: s.landingPage,
         utmSource: s.utmSource,
         utmCampaign: s.utmCampaign,
         activeDwellSeconds: s.activeDwellSeconds,
@@ -451,6 +539,7 @@ export function getLiveDashboardData(): AdminDashboardData {
     topPages,
     deviceBreakdown,
     geoBreakdown,
+    acquisitionBreakdown,
     visitors: visitorsList,
     inquiries: inquiriesList,
   };

@@ -33,6 +33,7 @@ const EMPTY_DATA: AdminDashboardData = {
     { name: "Bot", value: 0 },
   ],
   geoBreakdown: [],
+  acquisitionBreakdown: [],
   visitors: [],
   inquiries: [],
 };
@@ -216,7 +217,7 @@ function AdminPage() {
         {activeTab === "visitors" && <VisitorsTab visitors={dashboardData.visitors} />}
         {activeTab === "crm" && <CrmTab inquiries={dashboardData.inquiries} />}
         {activeTab === "cms" && <CmsTab />}
-        {activeTab === "observability" && <ObservabilityTab />}
+        {activeTab === "observability" && <ObservabilityTab data={dashboardData} />}
         {activeTab === "security" && <SecurityTab auditLogs={auditLogs} />}
       </main>
     </div>

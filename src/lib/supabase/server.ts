@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 const supabaseUrl =
   (typeof process !== "undefined" &&
@@ -12,11 +12,15 @@ const supabaseKey =
       process.env?.VITE_SUPABASE_PUBLISHABLE_KEY)) ||
   "sb_publishable_J_vSTIYpn-fxt_BkuatJgQ_JCn5-JKc";
 
-export function createServerSupabaseClient() {
-  return createClient(supabaseUrl, supabaseKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
-  });
+export function createServerSupabaseClient(): SupabaseClient | null {
+  try {
+    return createClient(supabaseUrl, supabaseKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    });
+  } catch {
+    return null;
+  }
 }

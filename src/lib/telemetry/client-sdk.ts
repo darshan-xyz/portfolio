@@ -4,6 +4,7 @@ import type {
   TelemetryEvent,
   TelemetryEventName,
 } from "./types";
+import { resolveAccurateDeviceProfile } from "./device-detector";
 
 let initialized = false;
 let sessionToken = "";
@@ -27,42 +28,9 @@ function generateUUID(): string {
   });
 }
 
-function getGpuInfo(): { vendor?: string; renderer?: string } {
-  if (typeof document === "undefined") return {};
-  try {
-    const canvas = document.createElement("canvas");
-    const gl = (canvas.getContext("webgl2") ||
-      canvas.getContext("webgl")) as WebGLRenderingContext | null;
-    if (!gl) return {};
-    const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
-    if (!debugInfo) return {};
-    return {
-      vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) || undefined,
-      renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || undefined,
-    };
-  } catch {
-    return {};
-  }
-}
-
 function resolveDeviceProfile(): DeviceTelemetryProfile {
   if (deviceProfile) return deviceProfile;
-  const gpu = getGpuInfo();
-  deviceProfile = {
-    screenWidth: typeof window !== "undefined" ? window.screen.width : 0,
-    screenHeight: typeof window !== "undefined" ? window.screen.height : 0,
-    viewportWidth: typeof window !== "undefined" ? window.innerWidth : 0,
-    viewportHeight: typeof window !== "undefined" ? window.innerHeight : 0,
-    devicePixelRatio: typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1,
-    hasTouch:
-      typeof navigator !== "undefined" &&
-      ("maxTouchPoints" in navigator ? navigator.maxTouchPoints > 0 : false),
-    colorDepth: typeof window !== "undefined" ? window.screen.colorDepth || 24 : 24,
-    gpuVendor: gpu.vendor,
-    gpuRenderer: gpu.renderer,
-    language: typeof navigator !== "undefined" ? navigator.language : "en",
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
-  };
+  deviceProfile = resolveAccurateDeviceProfile();
   return deviceProfile;
 }
 
@@ -88,6 +56,7 @@ export function queueTelemetryEvent(
   sectionId?: string,
 ) {
   if (typeof window === "undefined") return;
+  if (window.location.pathname.startsWith("/admin")) return;
 
   const event: TelemetryEvent = {
     eventName,
@@ -261,6 +230,7 @@ function setupGlobalClickListener() {
 
 export function initTelemetry() {
   if (typeof window === "undefined" || initialized) return;
+  if (window.location.pathname.startsWith("/admin")) return;
   initialized = true;
 
   // Session Token
