@@ -172,10 +172,10 @@ export function ObservabilityTab({ data }: ObservabilityTabProps) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="font-mono text-base font-semibold text-white">
+        <h2 className="font-mono text-base font-semibold text-foreground">
           SYSTEM HEALTH & RUNTIME OBSERVABILITY
         </h2>
-        <p className="text-xs text-white/50">
+        <p className="text-xs text-muted-foreground">
           Live WebGL hardware diagnostics, authentic browser navigation timing, and genuine client
           hardware distribution
         </p>
@@ -183,15 +183,15 @@ export function ObservabilityTab({ data }: ObservabilityTabProps) {
 
       {/* Live WebGL & GPU Hardware Probes Row */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">
+        <Card className="border-border bg-surface/40 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="font-mono text-xs font-medium text-white/60">
+            <CardTitle className="font-mono text-xs font-medium text-muted-foreground">
               WebGL Context
             </CardTitle>
-            <Activity className="h-4 w-4 text-[#7CF9C9]" />
+            <Activity className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-mono text-white">
+            <div className="text-2xl font-bold font-mono text-foreground">
               {webglInfo?.version || "Detecting..."}
             </div>
             <div className="mt-1 text-xs text-emerald-400 flex items-center gap-1">
@@ -201,127 +201,133 @@ export function ObservabilityTab({ data }: ObservabilityTabProps) {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">
+        <Card className="border-border bg-surface/40 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="font-mono text-xs font-medium text-white/60">
+            <CardTitle className="font-mono text-xs font-medium text-muted-foreground">
               Local GPU Renderer
             </CardTitle>
             <Cpu className="h-4 w-4 text-sky-400" />
           </CardHeader>
           <CardContent>
             <div
-              className="text-sm font-bold font-mono text-[#7CF9C9] truncate"
+              className="text-sm font-bold font-mono text-accent truncate"
               title={webglInfo?.renderer}
             >
               {webglInfo?.renderer || "Probing GPU..."}
             </div>
-            <div className="mt-1 text-xs text-white/40 font-mono">
+            <div className="mt-1 text-xs text-muted-foreground font-mono">
               Max Texture: {webglInfo?.maxTextureSize ? `${webglInfo.maxTextureSize}px` : "—"}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">
+        <Card className="border-border bg-surface/40 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="font-mono text-xs font-medium text-white/60">
+            <CardTitle className="font-mono text-xs font-medium text-muted-foreground">
               Active Sessions
             </CardTitle>
             <Gauge className="h-4 w-4 text-amber-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-mono text-white">{totalVisitorsWithGpu}</div>
-            <div className="mt-1 text-xs text-white/40">{totalViews} total recorded pageviews</div>
+            <div className="text-2xl font-bold font-mono text-foreground">
+              {totalVisitorsWithGpu}
+            </div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              {totalViews} total recorded pageviews
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">
+        <Card className="border-border bg-surface/40 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="font-mono text-xs font-medium text-white/60">
+            <CardTitle className="font-mono text-xs font-medium text-muted-foreground">
               Shading Pipeline
             </CardTitle>
             <Layers className="h-4 w-4 text-purple-400" />
           </CardHeader>
           <CardContent>
             <div
-              className="text-sm font-bold font-mono text-white truncate"
+              className="text-sm font-bold font-mono text-foreground truncate"
               title={webglInfo?.shadingLanguageVersion}
             >
               {webglInfo?.shadingLanguageVersion || "GLSL ES"}
             </div>
-            <div className="mt-1 text-xs text-white/40">Three.js Canvas Shader Ready</div>
+            <div className="mt-1 text-xs text-muted-foreground">Three.js Canvas Shader Ready</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Real Navigation & Web Performance Timing Grid */}
-      <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">
+      <Card className="border-border bg-surface/40 backdrop-blur-md">
         <CardHeader>
-          <CardTitle className="font-mono text-sm text-white flex items-center gap-2">
-            <Zap className="h-4 w-4 text-[#B8FF3A]" />
+          <CardTitle className="font-mono text-sm text-foreground flex items-center gap-2">
+            <Zap className="h-4 w-4 text-accent-2" />
             AUTHENTIC BROWSER NAVIGATION TIMING (PERFORMANCE API)
           </CardTitle>
-          <p className="text-xs text-white/50">
+          <p className="text-xs text-muted-foreground">
             Real metrics extracted directly from client window.performance navigation entries
           </p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+            <div className="rounded-xl border border-border bg-white/[0.02] p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-xs font-semibold text-white">TTFB</span>
+                <span className="font-mono text-xs font-semibold text-foreground">TTFB</span>
                 <Badge className="border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-[10px]">
                   LIVE
                 </Badge>
               </div>
-              <div className="text-2xl font-bold font-mono text-white">
+              <div className="text-2xl font-bold font-mono text-foreground">
                 {perfMetrics.ttfb !== null ? `${perfMetrics.ttfb}ms` : "Measuring..."}
               </div>
-              <p className="text-[11px] text-white/50 mt-1">Time to First Byte (Edge Response)</p>
+              <p className="text-[11px] text-muted-foreground mt-1">
+                Time to First Byte (Edge Response)
+              </p>
             </div>
 
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+            <div className="rounded-xl border border-border bg-white/[0.02] p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-xs font-semibold text-white">DOM READY</span>
+                <span className="font-mono text-xs font-semibold text-foreground">DOM READY</span>
                 <Badge className="border-sky-500/30 bg-sky-500/10 text-sky-400 text-[10px]">
                   PARSED
                 </Badge>
               </div>
-              <div className="text-2xl font-bold font-mono text-white">
+              <div className="text-2xl font-bold font-mono text-foreground">
                 {perfMetrics.domContentLoaded !== null
                   ? `${perfMetrics.domContentLoaded}ms`
                   : "Measuring..."}
               </div>
-              <p className="text-[11px] text-white/50 mt-1">DOMContentLoaded Duration</p>
+              <p className="text-[11px] text-muted-foreground mt-1">DOMContentLoaded Duration</p>
             </div>
 
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+            <div className="rounded-xl border border-border bg-white/[0.02] p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-xs font-semibold text-white">PAGE LOAD</span>
+                <span className="font-mono text-xs font-semibold text-foreground">PAGE LOAD</span>
                 <Badge className="border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-[10px]">
                   COMPLETE
                 </Badge>
               </div>
-              <div className="text-2xl font-bold font-mono text-white">
+              <div className="text-2xl font-bold font-mono text-foreground">
                 {perfMetrics.loadComplete !== null
                   ? `${perfMetrics.loadComplete}ms`
                   : "Measuring..."}
               </div>
-              <p className="text-[11px] text-white/50 mt-1">Window Load Event End</p>
+              <p className="text-[11px] text-muted-foreground mt-1">Window Load Event End</p>
             </div>
 
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+            <div className="rounded-xl border border-border bg-white/[0.02] p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-xs font-semibold text-white">DNS & TLS</span>
+                <span className="font-mono text-xs font-semibold text-foreground">DNS & TLS</span>
                 <Badge className="border-purple-500/30 bg-purple-500/10 text-purple-400 text-[10px]">
                   NETWORK
                 </Badge>
               </div>
-              <div className="text-2xl font-bold font-mono text-white">
+              <div className="text-2xl font-bold font-mono text-foreground">
                 {perfMetrics.dnsDuration !== null
                   ? `${perfMetrics.dnsDuration + (perfMetrics.tlsDuration || 0)}ms`
                   : "Measuring..."}
               </div>
-              <p className="text-[11px] text-white/50 mt-1">DNS Lookup + TLS Handshake</p>
+              <p className="text-[11px] text-muted-foreground mt-1">DNS Lookup + TLS Handshake</p>
             </div>
           </div>
         </CardContent>
@@ -330,31 +336,31 @@ export function ObservabilityTab({ data }: ObservabilityTabProps) {
       {/* Genuine Client Hardware GPU Distribution & Exception Monitor */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* GPU Distribution */}
-        <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">
+        <Card className="border-border bg-surface/40 backdrop-blur-md">
           <CardHeader>
-            <CardTitle className="font-mono text-sm text-white flex items-center gap-2">
-              <Cpu className="h-4 w-4 text-[#7CF9C9]" />
+            <CardTitle className="font-mono text-sm text-foreground flex items-center gap-2">
+              <Cpu className="h-4 w-4 text-accent" />
               VERIFIED VISITOR GPU HARDWARE DISTRIBUTION
             </CardTitle>
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-muted-foreground">
               Aggregated from authentic WebGL unmasked renderer strings across live sessions
             </p>
           </CardHeader>
           <CardContent className="space-y-3">
             {totalVisitorsWithGpu === 0 ? (
-              <div className="py-8 text-center font-mono text-xs text-white/40">
+              <div className="py-8 text-center font-mono text-xs text-muted-foreground">
                 Awaiting visitor sessions to calculate real GPU hardware distribution.
               </div>
             ) : (
               gpuDistribution.map((gpu) => (
                 <div key={gpu.vendor} className="space-y-1">
                   <div className="flex justify-between text-xs">
-                    <span className="text-white font-medium">{gpu.vendor}</span>
-                    <span className="font-mono text-white/70">
+                    <span className="text-foreground font-medium">{gpu.vendor}</span>
+                    <span className="font-mono text-muted-foreground">
                       {gpu.percent}% ({gpu.count})
                     </span>
                   </div>
-                  <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+                  <div className="h-1.5 w-full rounded-full bg-muted/20 overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{ width: `${Math.max(3, gpu.percent)}%`, backgroundColor: gpu.color }}
@@ -367,21 +373,23 @@ export function ObservabilityTab({ data }: ObservabilityTabProps) {
         </Card>
 
         {/* Client Error Stream */}
-        <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">
+        <Card className="border-border bg-surface/40 backdrop-blur-md">
           <CardHeader>
-            <CardTitle className="font-mono text-sm text-white flex items-center gap-2">
+            <CardTitle className="font-mono text-sm text-foreground flex items-center gap-2">
               <MonitorCheck className="h-4 w-4 text-emerald-400" />
               CLIENT RUNTIME & EXCEPTION MONITOR
             </CardTitle>
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-muted-foreground">
               Live monitoring of unhandled window errors and WebGL context lifecycle
             </p>
           </CardHeader>
           <CardContent>
             <div className="flex h-48 flex-col items-center justify-center rounded-lg border border-dashed border-emerald-500/20 bg-emerald-500/[0.02] text-center p-4">
               <CheckCircle2 className="h-8 w-8 text-emerald-400 mb-2" />
-              <div className="font-mono text-xs font-semibold text-white">ALL SYSTEMS HEALTHY</div>
-              <p className="text-[11px] text-white/50 max-w-sm mt-1">
+              <div className="font-mono text-xs font-semibold text-foreground">
+                ALL SYSTEMS HEALTHY
+              </div>
+              <p className="text-[11px] text-muted-foreground max-w-sm mt-1">
                 Zero client JavaScript exceptions or WebGL context failures recorded across{" "}
                 {totalViews} genuine pageview events.
               </p>

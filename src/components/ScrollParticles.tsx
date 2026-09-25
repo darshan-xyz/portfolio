@@ -69,6 +69,9 @@ export function ScrollParticles() {
     let raf = 0;
     const loop = () => {
       ctx.clearRect(0, 0, cvs.width, cvs.height);
+      const dark = document.documentElement.classList.contains("dark");
+      const particleColor = dark ? "124, 249, 201" : "13, 147, 115";
+      const glowColor = dark ? "rgba(124, 249, 201, 0.7)" : "rgba(13, 147, 115, 0.5)";
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx;
@@ -94,9 +97,9 @@ export function ScrollParticles() {
         const alpha = p.max === Infinity ? 0.35 : Math.max(0, 1 - p.life / p.max) * 0.85;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(124, 249, 201, ${alpha})`;
+        ctx.fillStyle = `rgba(${particleColor}, ${alpha})`;
         ctx.shadowBlur = 8 * dpr;
-        ctx.shadowColor = "rgba(124, 249, 201, 0.7)";
+        ctx.shadowColor = glowColor;
         ctx.fill();
       }
       ctx.shadowBlur = 0;
@@ -113,12 +116,5 @@ export function ScrollParticles() {
 
   if (reduced) return null;
 
-  return (
-    <canvas
-      ref={ref}
-      aria-hidden
-      className="pointer-events-none fixed inset-0 z-[5]"
-      style={{ mixBlendMode: "screen" }}
-    />
-  );
+  return <canvas ref={ref} aria-hidden className="pointer-events-none fixed inset-0 z-[5]" />;
 }

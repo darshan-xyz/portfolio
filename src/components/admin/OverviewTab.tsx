@@ -78,15 +78,15 @@ export function OverviewTab({ data }: OverviewTabProps) {
     <div className="space-y-6">
       {/* KPI Cards Row */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <Card className="border-white/10 bg-[#0B2A3B]/60 backdrop-blur-md">
+        <Card className="border-border bg-surface/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="font-mono text-xs font-medium text-white/60">
+            <CardTitle className="font-mono text-xs font-medium text-muted-foreground">
               Total Pageviews
             </CardTitle>
-            <Eye className="h-4 w-4 text-[#7CF9C9]" />
+            <Eye className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold tracking-tight text-white">
+            <div className="text-2xl font-bold tracking-tight text-foreground">
               {stats.totalViews.toLocaleString()}
             </div>
             {stats.viewsTrendPercent !== 0 ? (
@@ -104,7 +104,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
                 vs prior period
               </div>
             ) : (
-              <div className="mt-1 flex items-center text-xs text-white/40">
+              <div className="mt-1 flex items-center text-xs text-muted-foreground">
                 <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/50" />
                 Baseline period (first 7 days)
               </div>
@@ -112,15 +112,15 @@ export function OverviewTab({ data }: OverviewTabProps) {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-[#0B2A3B]/60 backdrop-blur-md">
+        <Card className="border-border bg-surface/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="font-mono text-xs font-medium text-white/60">
+            <CardTitle className="font-mono text-xs font-medium text-muted-foreground">
               Unique Visitors
             </CardTitle>
             <Users className="h-4 w-4 text-sky-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold tracking-tight text-white">
+            <div className="text-2xl font-bold tracking-tight text-foreground">
               {stats.uniqueVisitors.toLocaleString()}
             </div>
             {stats.visitorsTrendPercent !== 0 ? (
@@ -138,7 +138,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
                 vs prior period
               </div>
             ) : (
-              <div className="mt-1 flex items-center text-xs text-white/40">
+              <div className="mt-1 flex items-center text-xs text-muted-foreground">
                 <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-sky-400/50" />
                 100% authentic reach
               </div>
@@ -146,45 +146,45 @@ export function OverviewTab({ data }: OverviewTabProps) {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-[#0B2A3B]/60 backdrop-blur-md">
+        <Card className="border-border bg-surface/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="font-mono text-xs font-medium text-white/60">
+            <CardTitle className="font-mono text-xs font-medium text-muted-foreground">
               Avg Active Dwell
             </CardTitle>
             <Clock className="h-4 w-4 text-amber-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold tracking-tight text-white">
+            <div className="text-2xl font-bold tracking-tight text-foreground">
               {Math.floor(stats.avgDwellSeconds / 60)}m {stats.avgDwellSeconds % 60}s
             </div>
-            <div className="mt-1 text-xs text-white/40">Active focused tab time</div>
+            <div className="mt-1 text-xs text-muted-foreground">Active focused tab time</div>
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-[#0B2A3B]/60 backdrop-blur-md">
+        <Card className="border-border bg-surface/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="font-mono text-xs font-medium text-white/60">
+            <CardTitle className="font-mono text-xs font-medium text-muted-foreground">
               Resume Downloads
             </CardTitle>
-            <Download className="h-4 w-4 text-[#B8FF3A]" />
+            <Download className="h-4 w-4 text-accent-2" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold tracking-tight text-white">
+            <div className="text-2xl font-bold tracking-tight text-foreground">
               {stats.resumeDownloads}
             </div>
-            <div className="mt-1 text-xs text-[#B8FF3A]">{conversionRate}% conversion rate</div>
+            <div className="mt-1 text-xs text-accent-2">{conversionRate}% conversion rate</div>
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-[#0B2A3B]/60 backdrop-blur-md">
+        <Card className="border-border bg-surface/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="font-mono text-xs font-medium text-white/60">
+            <CardTitle className="font-mono text-xs font-medium text-muted-foreground">
               Recruiter / Target Visits
             </CardTitle>
             <Building2 className="h-4 w-4 text-purple-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold tracking-tight text-white">
+            <div className="text-2xl font-bold tracking-tight text-foreground">
               {stats.targetCompanyVisits}
             </div>
             <div className="mt-1 text-xs text-purple-300">
@@ -197,28 +197,28 @@ export function OverviewTab({ data }: OverviewTabProps) {
       </div>
 
       {/* Primary Chart: Traffic Over Time */}
-      <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">
+      <Card className="border-border bg-surface/40 backdrop-blur-md">
         <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between pb-2">
           <div>
-            <CardTitle className="font-mono text-sm text-white">
+            <CardTitle className="font-mono text-sm text-foreground">
               REAL-TIME TRAFFIC & ENGAGEMENT METRICS (LAST 7 DAYS)
             </CardTitle>
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-muted-foreground">
               Genuine daily pageviews vs unique visitors with resume download correlation
             </p>
           </div>
           <div className="flex items-center gap-4 text-xs font-mono">
             <div className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#7CF9C9]" />
-              <span className="text-white/70">Views</span>
+              <span className="h-2.5 w-2.5 rounded-full bg-accent" />
+              <span className="text-muted-foreground">Views</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 rounded-full bg-sky-400" />
-              <span className="text-white/70">Visitors</span>
+              <span className="text-muted-foreground">Visitors</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#B8FF3A]" />
-              <span className="text-white/70">Downloads</span>
+              <span className="h-2.5 w-2.5 rounded-full bg-accent-2" />
+              <span className="text-muted-foreground">Downloads</span>
             </div>
           </div>
         </CardHeader>
@@ -274,18 +274,18 @@ export function OverviewTab({ data }: OverviewTabProps) {
       {/* Two Column Grid: Top Pages & Device Breakdown */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Top Pages & Projects Bar Chart */}
-        <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md lg:col-span-2">
+        <Card className="border-border bg-surface/40 backdrop-blur-md lg:col-span-2">
           <CardHeader>
-            <CardTitle className="font-mono text-sm text-white">
+            <CardTitle className="font-mono text-sm text-foreground">
               TOP VISITED PORTFOLIO SECTIONS & ROUTES
             </CardTitle>
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-muted-foreground">
               Ranked by real visitor interactions and dwell time
             </p>
           </CardHeader>
           <CardContent>
             {topPages.length === 0 ? (
-              <div className="flex h-64 items-center justify-center font-mono text-xs text-white/40">
+              <div className="flex h-64 items-center justify-center font-mono text-xs text-muted-foreground">
                 No pageviews recorded yet. Live visits will chart here.
               </div>
             ) : (
@@ -328,13 +328,13 @@ export function OverviewTab({ data }: OverviewTabProps) {
         </Card>
 
         {/* Device Breakdown Donut */}
-        <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">
+        <Card className="border-border bg-surface/40 backdrop-blur-md">
           <CardHeader>
-            <CardTitle className="font-mono text-sm text-white flex items-center gap-2">
-              <Monitor className="h-4 w-4 text-[#7CF9C9]" />
+            <CardTitle className="font-mono text-sm text-foreground flex items-center gap-2">
+              <Monitor className="h-4 w-4 text-accent" />
               VERIFIED DEVICE PROFILES
             </CardTitle>
-            <p className="text-xs text-white/50">Desktop vs Mobile vs Tablet vs Bot</p>
+            <p className="text-xs text-muted-foreground">Desktop vs Mobile vs Tablet vs Bot</p>
           </CardHeader>
           <CardContent>
             <div className="relative h-44 w-full">
@@ -368,14 +368,14 @@ export function OverviewTab({ data }: OverviewTabProps) {
               {deviceBreakdown.map((d) => (
                 <div
                   key={d.name}
-                  className="flex items-center gap-2 rounded border border-white/5 bg-white/[0.02] p-1.5"
+                  className="flex items-center gap-2 rounded border border-border bg-white/[0.02] p-1.5"
                 >
                   <span
                     className="h-2.5 w-2.5 rounded-full"
                     style={{ backgroundColor: DEVICE_COLORS[d.name] }}
                   />
-                  <span className="text-white/70">{d.name}</span>
-                  <span className="ml-auto font-mono text-white">{d.value}%</span>
+                  <span className="text-muted-foreground">{d.name}</span>
+                  <span className="ml-auto font-mono text-foreground">{d.value}%</span>
                 </div>
               ))}
             </div>
@@ -384,19 +384,19 @@ export function OverviewTab({ data }: OverviewTabProps) {
       </div>
 
       {/* Traffic Acquisition & Inbound Pathways Section */}
-      <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">
+      <Card className="border-border bg-surface/40 backdrop-blur-md">
         <CardHeader>
-          <CardTitle className="font-mono text-sm text-white flex items-center gap-2">
+          <CardTitle className="font-mono text-sm text-foreground flex items-center gap-2">
             <Radio className="h-4 w-4 text-cyan-400" />
             ACQUISITION & VISITOR DISCOVERY PATHWAYS
           </CardTitle>
-          <p className="text-xs text-white/50">
+          <p className="text-xs text-muted-foreground">
             Exact entry channels, search discovery, social networks, and referral origins
           </p>
         </CardHeader>
         <CardContent>
           {acquisitionBreakdown.length === 0 ? (
-            <div className="py-8 text-center font-mono text-xs text-white/40">
+            <div className="py-8 text-center font-mono text-xs text-muted-foreground">
               No acquisition pathways recorded yet. Inbound visitor channels will appear here.
             </div>
           ) : (
@@ -412,7 +412,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
                   return (
                     <div
                       key={item.channel}
-                      className="rounded-xl border border-white/5 bg-white/[0.02] p-3.5 space-y-2.5"
+                      className="rounded-xl border border-border bg-white/[0.02] p-3.5 space-y-2.5"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -426,21 +426,25 @@ export function OverviewTab({ data }: OverviewTabProps) {
                             <Icon className="h-4 w-4" />
                           </div>
                           <div>
-                            <span className="font-medium text-xs text-white block">
+                            <span className="font-medium text-xs text-foreground block">
                               {conf.label}
                             </span>
-                            <span className="text-[10px] text-white/40 font-mono">
+                            <span className="text-[10px] text-muted-foreground font-mono">
                               Channel: {item.channel}
                             </span>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="font-mono text-sm font-bold text-white">{item.count}</div>
-                          <div className="text-[10px] font-mono text-white/50">{item.percent}%</div>
+                          <div className="font-mono text-sm font-bold text-foreground">
+                            {item.count}
+                          </div>
+                          <div className="text-[10px] font-mono text-muted-foreground">
+                            {item.percent}%
+                          </div>
                         </div>
                       </div>
 
-                      <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+                      <div className="h-1.5 w-full rounded-full bg-muted/20 overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all duration-500"
                           style={{
@@ -459,17 +463,19 @@ export function OverviewTab({ data }: OverviewTabProps) {
       </Card>
 
       {/* Global Geolocation Leaderboard */}
-      <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">
+      <Card className="border-border bg-surface/40 backdrop-blur-md">
         <CardHeader>
-          <CardTitle className="font-mono text-sm text-white flex items-center gap-2">
+          <CardTitle className="font-mono text-sm text-foreground flex items-center gap-2">
             <Globe className="h-4 w-4 text-sky-400" />
             TOP GEOGRAPHIC HUBS & TECH CLUSTERS
           </CardTitle>
-          <p className="text-xs text-white/50">Visitor density categorized by city and country</p>
+          <p className="text-xs text-muted-foreground">
+            Visitor density categorized by city and country
+          </p>
         </CardHeader>
         <CardContent>
           {geoBreakdown.length === 0 ? (
-            <div className="py-8 text-center font-mono text-xs text-white/40">
+            <div className="py-8 text-center font-mono text-xs text-muted-foreground">
               No geographical sessions recorded yet. Real visitor regions will appear here.
             </div>
           ) : (
@@ -477,23 +483,23 @@ export function OverviewTab({ data }: OverviewTabProps) {
               {geoBreakdown.map((geo) => (
                 <div
                   key={`${geo.country}-${geo.city}`}
-                  className="flex items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] p-3"
+                  className="flex items-center justify-between rounded-lg border border-border bg-white/[0.02] p-3"
                 >
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white text-xs">{geo.city}</span>
+                      <span className="font-semibold text-foreground text-xs">{geo.city}</span>
                       <Badge
                         variant="outline"
-                        className="border-white/20 text-[10px] text-white/60"
+                        className="border-border text-[10px] text-muted-foreground"
                       >
                         {geo.code}
                       </Badge>
                     </div>
-                    <p className="text-[11px] text-white/40">{geo.country}</p>
+                    <p className="text-[11px] text-muted-foreground">{geo.country}</p>
                   </div>
                   <div className="text-right">
-                    <div className="font-mono text-xs font-bold text-[#7CF9C9]">{geo.visits}</div>
-                    <div className="text-[10px] text-white/40">{geo.percent}%</div>
+                    <div className="font-mono text-xs font-bold text-accent">{geo.visits}</div>
+                    <div className="text-[10px] text-muted-foreground">{geo.percent}%</div>
                   </div>
                 </div>
               ))}

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import resumeAsset from "@/assets/resume.pdf.asset.json";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const NAV = [
   { label: "Experience", href: "#experience" },
@@ -53,6 +54,7 @@ export function SiteNav() {
         </ul>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <a
             href={resumeAsset.url}
             download="Darshan_R_Resume.pdf"

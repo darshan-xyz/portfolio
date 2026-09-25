@@ -135,7 +135,7 @@ export function BootLoader() {
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse at 50% 50%, oklch(0.90 0.20 165 / 0.22), transparent 60%)",
+              "radial-gradient(ellipse at 50% 50%, color-mix(in oklch, var(--accent) 22%, transparent), transparent 60%)",
           }}
         />
         <div className="relative flex items-center justify-between px-6 py-5 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground md:px-10">
@@ -162,7 +162,7 @@ export function BootLoader() {
               onClick={dismiss}
               disabled={phase === "boot"}
               className="group relative mt-6 inline-flex items-center gap-4 rounded-full border border-accent/50 bg-accent/10 px-10 py-3 font-mono text-xs uppercase tracking-[0.4em] text-accent transition-all duration-500 hover:border-accent hover:bg-accent hover:text-accent-foreground disabled:opacity-0"
-              style={{ boxShadow: "0 0 40px oklch(0.90 0.20 165 / 0.25)" }}
+              style={{ boxShadow: "0 0 40px color-mix(in oklch, var(--accent) 25%, transparent)" }}
             >
               <span
                 aria-hidden
@@ -182,7 +182,7 @@ export function BootLoader() {
         <style>{`
           .intro-name {
             font-size: clamp(2.75rem, min(11vw, 15svh), 10rem);
-            filter: drop-shadow(0 0 40px oklch(0.90 0.20 165 / 0.35));
+            filter: drop-shadow(0 0 40px color-mix(in oklch, var(--accent) 35%, transparent));
           }
         `}</style>
       </div>
@@ -201,7 +201,7 @@ export function BootLoader() {
             className="pointer-events-none absolute inset-0"
             style={{
               background:
-                "radial-gradient(ellipse at 20% 30%, oklch(0.90 0.20 165 / 0.18), transparent 60%)",
+                "radial-gradient(ellipse at 20% 30%, color-mix(in oklch, var(--accent) 18%, transparent), transparent 60%)",
             }}
           />
           <div className="relative flex items-center justify-between border-b border-border/60 px-6 py-5 md:px-10">

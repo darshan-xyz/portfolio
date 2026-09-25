@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { useThreeThemeColors } from "@/lib/three-theme";
 
 // Fractured shard field — angular low-poly polygons floating in deep water,
 // mint edge glow, parallax on cursor + scroll-driven camera + dispersion.
@@ -101,11 +102,12 @@ function Shard({ data, geo }: { data: ShardData; geo: THREE.BufferGeometry }) {
 }
 
 function Field() {
+  const colors = useThreeThemeColors();
   const group = useRef<THREE.Group>(null);
   const mouse = useRef({ x: 0, y: 0 });
-  const mint = useMemo(() => new THREE.Color("#7CF9C9"), []);
-  const lime = useMemo(() => new THREE.Color("#B8FF3A"), []);
-  const teal = useMemo(() => new THREE.Color("#3EE0B0"), []);
+  const mint = useMemo(() => new THREE.Color(colors.accent), [colors.accent]);
+  const lime = useMemo(() => new THREE.Color(colors.accent2), [colors.accent2]);
+  const teal = useMemo(() => new THREE.Color(colors.highlight), [colors.highlight]);
 
   const shards = useMemo<ShardData[]>(() => {
     const arr: ShardData[] = [];
@@ -176,6 +178,7 @@ function ScrollCamera() {
 }
 
 function CausticGlow() {
+  const colors = useThreeThemeColors();
   const l1 = useRef<THREE.PointLight>(null);
   const l2 = useRef<THREE.PointLight>(null);
   useFrame((state) => {
@@ -191,14 +194,27 @@ function CausticGlow() {
   });
   return (
     <>
-      <pointLight ref={l1} position={[3, 2, 4]} color="#7CF9C9" intensity={12} distance={18} />
-      <pointLight ref={l2} position={[-4, -2, 2]} color="#B8FF3A" intensity={6} distance={14} />
-      <ambientLight intensity={0.2} />
+      <pointLight
+        ref={l1}
+        position={[3, 2, 4]}
+        color={colors.accent}
+        intensity={12}
+        distance={18}
+      />
+      <pointLight
+        ref={l2}
+        position={[-4, -2, 2]}
+        color={colors.accent2}
+        intensity={6}
+        distance={14}
+      />
+      <ambientLight intensity={colors.ambient} />
     </>
   );
 }
 
 export default function ShardField() {
+  const colors = useThreeThemeColors();
   // ensure scroll position is fresh on mount
   useEffect(() => {
     window.dispatchEvent(new Event("scroll"));
@@ -212,7 +228,7 @@ export default function ShardField() {
       <CausticGlow />
       <ScrollCamera />
       <Field />
-      <fog attach="fog" args={["#040914", 8, 22]} />
+      <fog attach="fog" args={[colors.fog, 8, 22]} />
     </Canvas>
   );
 }

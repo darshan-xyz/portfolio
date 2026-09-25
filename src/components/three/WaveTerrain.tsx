@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { useThreeThemeColors } from "@/lib/three-theme";
 
 // Bio-luminescent wave terrain — a distorted plane grid seen from above
 // pulses like a neural landscape. Floating particles drift above it and
@@ -18,6 +19,7 @@ if (typeof window !== "undefined") {
 }
 
 function Terrain() {
+  const colors = useThreeThemeColors();
   const meshRef = useRef<THREE.Mesh>(null);
   const geo = useMemo(() => new THREE.PlaneGeometry(28, 28, 96, 96), []);
   const base = useMemo(() => {
@@ -50,7 +52,7 @@ function Terrain() {
   return (
     <mesh ref={meshRef} geometry={geo} rotation={[-Math.PI / 2.2, 0, 0]} position={[0, -2.5, 0]}>
       <meshBasicMaterial
-        color="#7CF9C9"
+        color={colors.accent}
         wireframe
         transparent
         opacity={0.55}
@@ -61,6 +63,7 @@ function Terrain() {
 }
 
 function Particles({ count = 220 }: { count?: number }) {
+  const colors = useThreeThemeColors();
   const ref = useRef<THREE.Points>(null);
   const { positions, seeds } = useMemo(() => {
     const positions = new Float32Array(count * 3);
@@ -93,7 +96,7 @@ function Particles({ count = 220 }: { count?: number }) {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} count={count} />
       </bufferGeometry>
       <pointsMaterial
-        color="#B8FF3A"
+        color={colors.accent2}
         size={0.06}
         sizeAttenuation
         transparent
@@ -106,6 +109,7 @@ function Particles({ count = 220 }: { count?: number }) {
 }
 
 function OrbitRing() {
+  const colors = useThreeThemeColors();
   const ref = useRef<THREE.Mesh>(null);
   useFrame((state) => {
     const t = state.clock.elapsedTime;
@@ -119,7 +123,7 @@ function OrbitRing() {
     <mesh ref={ref} position={[0, 1.5, -2]}>
       <torusGeometry args={[3.2, 0.02, 8, 128]} />
       <meshBasicMaterial
-        color="#7CF9C9"
+        color={colors.accent}
         transparent
         opacity={0.55}
         blending={THREE.AdditiveBlending}
@@ -148,6 +152,7 @@ function ScrollCamera() {
 }
 
 export default function WaveTerrain() {
+  const colors = useThreeThemeColors();
   useEffect(() => {
     window.dispatchEvent(new Event("scroll"));
   }, []);
@@ -157,14 +162,14 @@ export default function WaveTerrain() {
       dpr={[1, 1.6]}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
     >
-      <ambientLight intensity={0.35} />
-      <pointLight position={[0, 4, 0]} color="#7CF9C9" intensity={20} distance={22} />
-      <pointLight position={[6, 2, -3]} color="#B8FF3A" intensity={12} distance={18} />
+      <ambientLight intensity={colors.ambient} />
+      <pointLight position={[0, 4, 0]} color={colors.accent} intensity={20} distance={22} />
+      <pointLight position={[6, 2, -3]} color={colors.accent2} intensity={12} distance={18} />
       <ScrollCamera />
       <Terrain />
       <OrbitRing />
       <Particles />
-      <fog attach="fog" args={["#040914", 10, 28]} />
+      <fog attach="fog" args={[colors.fog, 10, 28]} />
     </Canvas>
   );
 }

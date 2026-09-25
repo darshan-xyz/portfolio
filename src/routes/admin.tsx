@@ -136,28 +136,28 @@ function AdminPage() {
   // If not authenticated, render Hardened Terminal Gate
   if (!isAuthenticated) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#040914] px-4 font-sans text-white">
+      <div className="flex min-h-screen items-center justify-center bg-background px-4 font-sans text-foreground">
         <div aria-hidden className="scanlines pointer-events-none fixed inset-0 z-10" />
-        <Card className="relative z-20 w-full max-w-md border-white/10 bg-[#0B2A3B]/80 backdrop-blur-2xl shadow-2xl">
+        <Card className="relative z-20 w-full max-w-md border-border bg-surface/80 backdrop-blur-2xl shadow-2xl">
           <CardHeader className="text-center pb-4">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-[#7CF9C9]/40 bg-[#040914] text-[#7CF9C9] shadow-lg">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-accent/40 bg-background text-accent shadow-lg">
               <ShieldCheck className="h-6 w-6" />
             </div>
-            <CardTitle className="font-mono text-base font-bold tracking-wider text-white">
+            <CardTitle className="font-mono text-base font-bold tracking-wider text-foreground">
               DARSHAN_R // ARCHON GATE
             </CardTitle>
-            <p className="font-mono text-xs text-white/50">
+            <p className="font-mono text-xs text-muted-foreground">
               Enterprise Admin & Telemetry Clearance
             </p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label className="mb-1 block font-mono text-xs text-white/60">
+                <label className="mb-1 block font-mono text-xs text-muted-foreground">
                   ADMINISTRATIVE PASSKEY
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-2.5 h-4 w-4 text-white/40" />
+                  <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="password"
                     placeholder="Enter passkey (e.g. darshan2026)"
@@ -166,7 +166,7 @@ function AdminPage() {
                       setPasscode(e.target.value);
                       setErrorMsg("");
                     }}
-                    className="border-white/10 bg-white/5 pl-9 text-xs text-white placeholder:text-white/30 focus:border-[#7CF9C9]"
+                    className="border-border bg-muted/20 pl-9 text-xs text-foreground placeholder:text-muted-foreground/50 focus:border-accent"
                     autoFocus
                   />
                 </div>
@@ -181,13 +181,13 @@ function AdminPage() {
 
               <Button
                 type="submit"
-                className="w-full gap-2 bg-[#7CF9C9] font-mono text-xs font-semibold text-[#040914] hover:bg-[#7CF9C9]/90"
+                className="w-full gap-2 bg-accent font-mono text-xs font-semibold text-accent-foreground hover:bg-accent/90"
               >
                 Authenticate Clearance
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
 
-              <div className="border-t border-white/5 pt-3 text-center">
+              <div className="border-t border-border pt-3 text-center">
                 <button
                   type="button"
                   onClick={() => {
@@ -195,7 +195,7 @@ function AdminPage() {
                     setIsAuthenticated(true);
                     sessionStorage.setItem("__prt_admin_auth", "authenticated");
                   }}
-                  className="font-mono text-[11px] text-[#7CF9C9]/70 hover:text-[#7CF9C9] hover:underline"
+                  className="font-mono text-[11px] text-accent/70 hover:text-accent hover:underline"
                 >
                   [ 1-Click Fast Auth for Owner ]
                 </button>
@@ -209,9 +209,9 @@ function AdminPage() {
 
   // Authenticated Enterprise Dashboard
   return (
-    <div className="min-h-screen bg-[#040914] text-white selection:bg-[#7CF9C9] selection:text-[#040914]">
+    <div className="min-h-screen bg-background text-foreground selection:bg-accent selection:text-accent-foreground">
       {/* Background Ambience */}
-      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-[#0B2A3B]/40 via-transparent to-transparent" />
+      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-surface/40 via-transparent to-transparent" />
 
       {/* Admin Navigation Header */}
       <AdminHeader

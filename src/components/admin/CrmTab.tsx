@@ -67,10 +67,10 @@ export function CrmTab({ inquiries: initialInquiries }: CrmTabProps) {
       {/* Header */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-mono text-base font-semibold text-white">
+          <h2 className="font-mono text-base font-semibold text-foreground">
             RECRUITMENT & INQUIRY PIPELINE (CRM)
           </h2>
-          <p className="text-xs text-white/50">
+          <p className="text-xs text-muted-foreground">
             Real inbound opportunities submitted through portfolio contact channels
           </p>
         </div>
@@ -84,7 +84,7 @@ export function CrmTab({ inquiries: initialInquiries }: CrmTabProps) {
           </Badge>
           <Badge
             variant="outline"
-            className="border-white/10 bg-white/5 font-mono text-xs text-white/60"
+            className="border-border bg-muted/20 font-mono text-xs text-muted-foreground"
           >
             {inquiries.length} Total Messages
           </Badge>
@@ -98,14 +98,14 @@ export function CrmTab({ inquiries: initialInquiries }: CrmTabProps) {
           return (
             <div
               key={stage.id}
-              className="flex flex-col rounded-xl border border-white/10 bg-[#0B2A3B]/30 p-3 backdrop-blur-md min-h-[500px]"
+              className="flex flex-col rounded-xl border border-border bg-surface/30 p-3 backdrop-blur-md min-h-[500px]"
             >
               {/* Column Header */}
-              <div className="mb-3 flex items-center justify-between border-b border-white/5 pb-2">
-                <span className="font-mono text-xs font-semibold uppercase tracking-wider text-white">
+              <div className="mb-3 flex items-center justify-between border-b border-border pb-2">
+                <span className="font-mono text-xs font-semibold uppercase tracking-wider text-foreground">
                   {stage.label}
                 </span>
-                <span className="rounded-full bg-white/10 px-2 py-0.5 font-mono text-[10px] text-white/60">
+                <span className="rounded-full bg-muted px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
                   {stageInquiries.length}
                 </span>
               </div>
@@ -113,21 +113,21 @@ export function CrmTab({ inquiries: initialInquiries }: CrmTabProps) {
               {/* Cards in Column */}
               <div className="flex-1 space-y-3">
                 {stageInquiries.length === 0 ? (
-                  <div className="flex h-32 items-center justify-center rounded-lg border border-dashed border-white/5 text-[11px] text-white/30 text-center p-3 font-mono">
+                  <div className="flex h-32 items-center justify-center rounded-lg border border-dashed border-border text-[11px] text-muted-foreground/50 text-center p-3 font-mono">
                     No leads in {stage.label.toLowerCase()}
                   </div>
                 ) : (
                   stageInquiries.map((inq) => (
                     <Card
                       key={inq.id}
-                      className="border-white/10 bg-[#040914]/90 text-white shadow-lg transition-all hover:border-[#7CF9C9]/50"
+                      className="border-border bg-background/90 text-foreground shadow-lg transition-all hover:border-accent/50"
                     >
                       <CardContent className="space-y-3 p-3.5">
                         {/* Header: Sender & Priority */}
                         <div className="flex items-start justify-between gap-1">
                           <div>
-                            <div className="font-semibold text-xs text-white">{inq.name}</div>
-                            <div className="text-[10px] text-white/50">{inq.roleType}</div>
+                            <div className="font-semibold text-xs text-foreground">{inq.name}</div>
+                            <div className="text-[10px] text-muted-foreground">{inq.roleType}</div>
                           </div>
                           <Badge
                             className={`text-[9px] px-1.5 py-0 uppercase ${
@@ -135,7 +135,7 @@ export function CrmTab({ inquiries: initialInquiries }: CrmTabProps) {
                                 ? "border-rose-500/40 bg-rose-500/20 text-rose-300"
                                 : inq.priority === "high"
                                   ? "border-amber-500/40 bg-amber-500/20 text-amber-300"
-                                  : "border-white/10 bg-white/5 text-white/60"
+                                  : "border-border bg-muted/20 text-muted-foreground"
                             }`}
                           >
                             {inq.priority}
@@ -145,16 +145,16 @@ export function CrmTab({ inquiries: initialInquiries }: CrmTabProps) {
                         {/* Company & Email */}
                         <div className="space-y-1 text-xs">
                           {inq.company && inq.company !== "Not specified" && (
-                            <div className="flex items-center gap-1.5 text-white/80">
-                              <Building className="h-3 w-3 text-white/40" />
+                            <div className="flex items-center gap-1.5 text-muted-foreground">
+                              <Building className="h-3 w-3 text-muted-foreground" />
                               <span className="font-medium text-[11px]">{inq.company}</span>
                             </div>
                           )}
-                          <div className="flex items-center gap-1.5 text-white/60">
-                            <Mail className="h-3 w-3 text-white/40" />
+                          <div className="flex items-center gap-1.5 text-muted-foreground">
+                            <Mail className="h-3 w-3 text-muted-foreground" />
                             <a
                               href={`mailto:${inq.email}`}
-                              className="font-mono text-[10px] hover:text-[#7CF9C9] truncate max-w-[180px]"
+                              className="font-mono text-[10px] hover:text-accent truncate max-w-[180px]"
                             >
                               {inq.email}
                             </a>
@@ -162,18 +162,18 @@ export function CrmTab({ inquiries: initialInquiries }: CrmTabProps) {
                         </div>
 
                         {/* Message Content */}
-                        <div className="rounded border border-white/5 bg-white/[0.02] p-2 text-[11px] text-white/80 line-clamp-3">
+                        <div className="rounded border border-border bg-white/[0.02] p-2 text-[11px] text-muted-foreground line-clamp-3">
                           "{inq.message}"
                         </div>
 
                         {/* Opportunity Type & Timestamp */}
-                        <div className="flex items-center justify-between text-[10px] text-white/40 border-t border-white/5 pt-2">
+                        <div className="flex items-center justify-between text-[10px] text-muted-foreground border-t border-border pt-2">
                           <span className="font-mono">{inq.opportunityType}</span>
                           <span>{inq.createdAt}</span>
                         </div>
 
                         {/* Pipeline Stage Movement Controls */}
-                        <div className="flex items-center justify-between gap-1 border-t border-white/5 pt-2">
+                        <div className="flex items-center justify-between gap-1 border-t border-border pt-2">
                           {stage.id !== "new" && (
                             <Button
                               variant="ghost"
@@ -182,7 +182,7 @@ export function CrmTab({ inquiries: initialInquiries }: CrmTabProps) {
                                 const idx = STAGES.findIndex((s) => s.id === stage.id);
                                 if (idx > 0) moveStage(inq.id, STAGES[idx - 1].id);
                               }}
-                              className="h-6 px-1.5 text-[10px] text-white/50 hover:text-white"
+                              className="h-6 px-1.5 text-[10px] text-muted-foreground hover:text-foreground"
                             >
                               ← Back
                             </Button>
@@ -195,7 +195,7 @@ export function CrmTab({ inquiries: initialInquiries }: CrmTabProps) {
                                 const idx = STAGES.findIndex((s) => s.id === stage.id);
                                 if (idx < STAGES.length - 1) moveStage(inq.id, STAGES[idx + 1].id);
                               }}
-                              className="ml-auto h-6 gap-1 px-1.5 text-[10px] text-[#7CF9C9] hover:bg-[#7CF9C9]/10"
+                              className="ml-auto h-6 gap-1 px-1.5 text-[10px] text-accent hover:bg-accent/10"
                             >
                               Advance →
                             </Button>

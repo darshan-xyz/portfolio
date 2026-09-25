@@ -15,6 +15,7 @@ import { BootLoader } from "../components/BootLoader";
 import { prefetchScenes } from "../components/ClientOnly";
 import { SITE_URL } from "../lib/seo";
 import { initTelemetry } from "../lib/telemetry/client-sdk";
+import { ThemeProvider } from "../lib/theme";
 
 function NotFoundComponent() {
   return (
@@ -132,6 +133,11 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('portfolio-theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}})();`,
+          }}
+        />
         <HeadContent />
       </head>
       <body>
@@ -153,12 +159,14 @@ function RootComponent() {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <SiteBackground />
-      <div aria-hidden className="scanlines pointer-events-none fixed inset-0 z-[60]" />
-      <BootLoader />
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <SiteBackground />
+        <div aria-hidden className="scanlines pointer-events-none fixed inset-0 z-[60]" />
+        <BootLoader />
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

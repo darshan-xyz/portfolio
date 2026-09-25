@@ -1,12 +1,14 @@
 import { useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { useThreeThemeColors } from "@/lib/three-theme";
 
 // Neural-network style hero: instanced spheres as nodes, line connections, gentle rotation + mouse parallax.
 
 const NODE_COUNT = 90;
 
 function NeuralNetwork() {
+  const colors = useThreeThemeColors();
   const group = useRef<THREE.Group>(null);
   const mouse = useRef({ x: 0, y: 0 });
 
@@ -56,7 +58,7 @@ function NeuralNetwork() {
     <group ref={group}>
       <lineSegments geometry={lineGeometry}>
         <lineBasicMaterial
-          color="#00E0FF"
+          color={colors.accent}
           transparent
           opacity={0.22}
           depthWrite={false}
@@ -67,7 +69,7 @@ function NeuralNetwork() {
         <mesh key={i} position={p}>
           <sphereGeometry args={[0.045, 12, 12]} />
           <meshBasicMaterial
-            color={i % 9 === 0 ? "#FFB347" : "#7FE9FF"}
+            color={i % 9 === 0 ? colors.accent2 : colors.highlight}
             transparent
             opacity={0.95}
           />
@@ -78,6 +80,7 @@ function NeuralNetwork() {
 }
 
 function ParticleField() {
+  const colors = useThreeThemeColors();
   const ref = useRef<THREE.Points>(null);
   const geom = useMemo(() => {
     const g = new THREE.BufferGeometry();
@@ -98,20 +101,27 @@ function ParticleField() {
 
   return (
     <points ref={ref} geometry={geom}>
-      <pointsMaterial size={0.015} color="#9fd9ff" transparent opacity={0.55} depthWrite={false} />
+      <pointsMaterial
+        size={0.015}
+        color={colors.particles}
+        transparent
+        opacity={0.55}
+        depthWrite={false}
+      />
     </points>
   );
 }
 
 export default function HeroScene() {
+  const colors = useThreeThemeColors();
   return (
     <Canvas
       camera={{ position: [0, 0, 6.5], fov: 55 }}
       dpr={[1, 1.6]}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
     >
-      <color attach="background" args={["#05060A"]} />
-      <ambientLight intensity={0.6} />
+      <color attach="background" args={[colors.fog]} />
+      <ambientLight intensity={colors.ambient} />
       <ParticleField />
       <NeuralNetwork />
     </Canvas>

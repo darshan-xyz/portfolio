@@ -50,6 +50,33 @@
 :root {
   --radius: 0.25rem;
 
+  /* Clean professional light palette */
+  --background: oklch(0.985 0.005 240); /* #FAFBFE near-white */
+  --foreground: oklch(0.2 0.02 240); /* #1A1D2B dark text */
+  --surface: oklch(0.96 0.008 220); /* #F0F2F5 light panel */
+  --surface-2: oklch(0.93 0.01 220); /* #E5E8ED elevated */
+  --muted: oklch(0.94 0.008 220);
+  --muted-foreground: oklch(0.5 0.02 220); /* #6B7280 gray text */
+  --border: oklch(0.85 0.01 220 / 60%); /* subtle gray border */
+
+  --accent: oklch(0.55 0.15 175); /* deep teal — legible on white */
+  --accent-foreground: oklch(0.98 0 0); /* white text on accent buttons */
+  --accent-2: oklch(0.5 0.18 140); /* forest green */
+
+  --glow-accent: none; /* no glow in light mode */
+  --gradient-hero: radial-gradient(
+    ellipse 70% 55% at 30% 40%,
+    oklch(0.55 0.15 175 / 0.06),
+    transparent 70%
+  );
+  --grid-line: oklch(0.55 0.15 175 / 0.04);
+  --hero-glass: oklch(0.98 0.005 220 / 60%);
+  --hero-glass-edge: oklch(0.92 0.01 220 / 50%);
+  --hero-wash: oklch(0.96 0.005 220 / 40%);
+  --hero-haze: oklch(0.55 0.15 175 / 0.08);
+}
+
+.dark {
   /* Bioluminescent palette — deep sea + mint glow */
   --background: oklch(0.13 0.03 240); /* #040914 deep water */
   --foreground: oklch(0.97 0.03 165); /* #E6FFF3 phosphor */
@@ -70,23 +97,6 @@
     transparent 70%
   );
   --grid-line: oklch(0.9 0.2 165 / 0.06);
-  --hero-glass: oklch(0.44 0.07 205 / 22%);
-  --hero-glass-edge: oklch(0.96 0.04 165 / 24%);
-  --hero-wash: oklch(0.14 0.03 230 / 30%);
-  --hero-haze: oklch(0.82 0.16 175 / 18%);
-}
-
-.dark {
-  --background: oklch(0.13 0.03 240);
-  --foreground: oklch(0.97 0.03 165);
-  --surface: oklch(0.24 0.05 220);
-  --surface-2: oklch(0.3 0.06 220);
-  --muted: oklch(0.22 0.04 220);
-  --muted-foreground: oklch(0.62 0.03 175);
-  --border: oklch(0.6 0.04 175 / 22%);
-  --accent: oklch(0.9 0.2 165);
-  --accent-foreground: oklch(0.13 0.03 240);
-  --accent-2: oklch(0.94 0.28 130);
   --hero-glass: oklch(0.44 0.07 205 / 22%);
   --hero-glass-edge: oklch(0.96 0.04 165 / 24%);
   --hero-wash: oklch(0.14 0.03 230 / 30%);
@@ -293,6 +303,10 @@
 
   html {
     scroll-behavior: smooth;
+    color-scheme: light;
+  }
+
+  html.dark {
     color-scheme: dark;
   }
 
@@ -403,7 +417,7 @@
   transition: none;
 }
 
-/* Global scanlines overlay — subtle CRT/HUD texture */
+/* Global scanlines overlay — subtle CRT/HUD texture (dark mode only) */
 .scanlines {
   background-image: repeating-linear-gradient(
     to bottom,
@@ -413,6 +427,10 @@
     transparent 4px
   );
   mix-blend-mode: overlay;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+.dark .scanlines {
   opacity: 0.6;
 }
 .scanlines::after {
@@ -454,10 +472,14 @@ html.has-custom-cursor * {
 .custom-cursor-arrow {
   color: var(--accent);
   line-height: 0;
-  filter: drop-shadow(0 0 8px oklch(0.9 0.2 165 / 0.7));
+  filter: none;
   transition:
     color 200ms ease,
+    filter 200ms ease,
     opacity 200ms ease;
+}
+.dark .custom-cursor-arrow {
+  filter: drop-shadow(0 0 8px oklch(0.9 0.2 165 / 0.7));
 }
 .custom-cursor-arrow svg {
   transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -477,8 +499,11 @@ html.has-custom-cursor * {
   width: 30px;
   height: 30px;
   border-radius: 999px;
-  background: radial-gradient(circle, oklch(0.9 0.2 165 / 0.28), transparent 70%);
+  background: radial-gradient(circle, oklch(0.55 0.15 175 / 0.12), transparent 70%);
   transition: opacity 200ms ease;
+}
+.dark .custom-cursor-glow {
+  background: radial-gradient(circle, oklch(0.9 0.2 165 / 0.28), transparent 70%);
 }
 
 @utility marquee-track {

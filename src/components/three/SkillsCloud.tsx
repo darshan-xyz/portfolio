@@ -2,6 +2,7 @@ import { useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Billboard, Text } from "@react-three/drei";
 import * as THREE from "three";
+import { useThreeThemeColors } from "@/lib/three-theme";
 
 function fibonacciSphere(count: number, radius: number) {
   const pts: THREE.Vector3[] = [];
@@ -17,6 +18,7 @@ function fibonacciSphere(count: number, radius: number) {
 }
 
 function Cloud({ words }: { words: string[] }) {
+  const colors = useThreeThemeColors();
   const group = useRef<THREE.Group>(null);
   const positions = useMemo(() => fibonacciSphere(words.length, 2.4), [words.length]);
   useFrame((state, delta) => {
@@ -30,11 +32,11 @@ function Cloud({ words }: { words: string[] }) {
         <Billboard key={w + i} position={positions[i]}>
           <Text
             fontSize={0.18}
-            color={i % 5 === 0 ? "#B8FF3A" : "#E6FFF3"}
+            color={i % 5 === 0 ? colors.accent2 : colors.highlight}
             anchorX="center"
             anchorY="middle"
             outlineWidth={0.004}
-            outlineColor="#7CF9C9"
+            outlineColor={colors.accent}
           >
             {w}
           </Text>
@@ -45,9 +47,10 @@ function Cloud({ words }: { words: string[] }) {
 }
 
 export default function SkillsCloud({ words }: { words: string[] }) {
+  const colors = useThreeThemeColors();
   return (
     <Canvas camera={{ position: [0, 0, 6], fov: 50 }} dpr={[1, 1.5]} gl={{ alpha: true }}>
-      <ambientLight intensity={0.8} />
+      <ambientLight intensity={colors.ambient} />
       <Cloud words={words} />
     </Canvas>
   );

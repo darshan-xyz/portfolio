@@ -46,11 +46,22 @@ export function TransmissionReel({
       setT((v) => (v + 1) % 10000);
       const w = cvs.width;
       const h = cvs.height;
-      ctx.fillStyle = "rgba(4, 9, 20, 0.35)";
+
+      const dark = document.documentElement.classList.contains("dark");
+      const bgClear = dark ? "rgba(4, 9, 20, 0.35)" : "rgba(240, 242, 245, 0.45)";
+      const primary = dark ? "rgba(124, 249, 201, 0.9)" : "rgba(13, 147, 115, 0.9)";
+      const secondary = dark ? "rgba(184, 255, 58, 0.35)" : "rgba(61, 122, 31, 0.4)";
+      const radarRing = dark ? "rgba(124, 249, 201, 0.3)" : "rgba(13, 147, 115, 0.3)";
+      const radarSweep0 = dark ? "rgba(184, 255, 58, 0.6)" : "rgba(61, 122, 31, 0.6)";
+      const radarSweep1 = dark ? "rgba(184, 255, 58, 0)" : "rgba(61, 122, 31, 0)";
+      const radarDot = dark ? "rgba(124, 249, 201, 0.8)" : "rgba(13, 147, 115, 0.8)";
+      const scanline = dark ? "rgba(124, 249, 201, 0.08)" : "rgba(13, 147, 115, 0.06)";
+
+      ctx.fillStyle = bgClear;
       ctx.fillRect(0, 0, w, h);
 
       if (mode === "waveform") {
-        ctx.strokeStyle = "rgba(124, 249, 201, 0.9)";
+        ctx.strokeStyle = primary;
         ctx.lineWidth = 1.5 * dpr;
         ctx.beginPath();
         for (let x = 0; x < w; x += 2) {
@@ -62,7 +73,7 @@ export function TransmissionReel({
           else ctx.lineTo(x, y);
         }
         ctx.stroke();
-        ctx.strokeStyle = "rgba(184, 255, 58, 0.35)";
+        ctx.strokeStyle = secondary;
         ctx.beginPath();
         for (let x = 0; x < w; x += 2) {
           const y = h / 2 + Math.sin((x + frame * 4) * 0.03) * h * 0.28;
@@ -74,7 +85,7 @@ export function TransmissionReel({
         const cx = w / 2;
         const cy = h / 2;
         const R = Math.min(w, h) * 0.42;
-        ctx.strokeStyle = "rgba(124, 249, 201, 0.3)";
+        ctx.strokeStyle = radarRing;
         for (let i = 1; i <= 4; i++) {
           ctx.beginPath();
           ctx.arc(cx, cy, (R * i) / 4, 0, Math.PI * 2);
@@ -87,8 +98,8 @@ export function TransmissionReel({
           cx + Math.cos(angle) * R,
           cy + Math.sin(angle) * R,
         );
-        grad.addColorStop(0, "rgba(184, 255, 58, 0.6)");
-        grad.addColorStop(1, "rgba(184, 255, 58, 0)");
+        grad.addColorStop(0, radarSweep0);
+        grad.addColorStop(1, radarSweep1);
         ctx.strokeStyle = grad;
         ctx.lineWidth = 2 * dpr;
         ctx.beginPath();
@@ -98,7 +109,7 @@ export function TransmissionReel({
         for (let i = 0; i < 6; i++) {
           const a = (i * Math.PI) / 3 + frame * 0.005;
           const r = R * (0.3 + ((i * 7) % 5) / 8);
-          ctx.fillStyle = "rgba(124, 249, 201, 0.8)";
+          ctx.fillStyle = radarDot;
           ctx.beginPath();
           ctx.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r, 2 * dpr, 0, Math.PI * 2);
           ctx.fill();
@@ -108,16 +119,16 @@ export function TransmissionReel({
         const img = ctx.createImageData(w, h);
         for (let i = 0; i < img.data.length; i += 4) {
           const n = Math.random() * 200;
-          img.data[i] = n * 0.4;
+          img.data[i] = dark ? n * 0.4 : n * 0.7;
           img.data[i + 1] = n;
-          img.data[i + 2] = n * 0.8;
-          img.data[i + 3] = 60;
+          img.data[i + 2] = dark ? n * 0.8 : n * 0.5;
+          img.data[i + 3] = dark ? 60 : 40;
         }
         ctx.putImageData(img, 0, 0);
       }
 
       // scanline
-      ctx.fillStyle = "rgba(124, 249, 201, 0.08)";
+      ctx.fillStyle = scanline;
       const sy = (frame * 2) % h;
       ctx.fillRect(0, sy, w, 2 * dpr);
       raf = requestAnimationFrame(loop);
