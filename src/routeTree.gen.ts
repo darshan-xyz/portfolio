@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ActivitiesSlugRouteImport } from './routes/activities.$slug'
+import { Route as ApiAdminRouteImport } from './routes/api/admin'
+import { Route as ApiContactRouteImport } from './routes/api/contact'
 import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
 import { Route as CertificationsSlugRouteImport } from './routes/certifications.$slug'
 import { Route as ExperienceSlugRouteImport } from './routes/experience.$slug'
@@ -36,6 +38,16 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ActivitiesSlugRoute = ActivitiesSlugRouteImport.update({
   id: '/activities/$slug',
   path: '/activities/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminRoute = ApiAdminRouteImport.update({
+  id: '/api/admin',
+  path: '/api/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiContactRoute = ApiContactRouteImport.update({
+  id: '/api/contact',
+  path: '/api/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiTelemetryRoute = ApiTelemetryRouteImport.update({
@@ -64,6 +76,8 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/activities/$slug': typeof ActivitiesSlugRoute
+  '/api/admin': typeof ApiAdminRoute
+  '/api/contact': typeof ApiContactRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/certifications/$slug': typeof CertificationsSlugRoute
   '/experience/$slug': typeof ExperienceSlugRoute
@@ -74,6 +88,8 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/activities/$slug': typeof ActivitiesSlugRoute
+  '/api/admin': typeof ApiAdminRoute
+  '/api/contact': typeof ApiContactRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/certifications/$slug': typeof CertificationsSlugRoute
   '/experience/$slug': typeof ExperienceSlugRoute
@@ -85,6 +101,8 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/activities/$slug': typeof ActivitiesSlugRoute
+  '/api/admin': typeof ApiAdminRoute
+  '/api/contact': typeof ApiContactRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/certifications/$slug': typeof CertificationsSlugRoute
   '/experience/$slug': typeof ExperienceSlugRoute
@@ -97,6 +115,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/sitemap.xml'
     | '/activities/$slug'
+    | '/api/admin'
+    | '/api/contact'
     | '/api/telemetry'
     | '/certifications/$slug'
     | '/experience/$slug'
@@ -107,6 +127,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/sitemap.xml'
     | '/activities/$slug'
+    | '/api/admin'
+    | '/api/contact'
     | '/api/telemetry'
     | '/certifications/$slug'
     | '/experience/$slug'
@@ -117,6 +139,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/sitemap.xml'
     | '/activities/$slug'
+    | '/api/admin'
+    | '/api/contact'
     | '/api/telemetry'
     | '/certifications/$slug'
     | '/experience/$slug'
@@ -128,6 +152,8 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ActivitiesSlugRoute: typeof ActivitiesSlugRoute
+  ApiAdminRoute: typeof ApiAdminRoute
+  ApiContactRoute: typeof ApiContactRoute
   ApiTelemetryRoute: typeof ApiTelemetryRoute
   CertificationsSlugRoute: typeof CertificationsSlugRoute
   ExperienceSlugRoute: typeof ExperienceSlugRoute
@@ -162,6 +188,20 @@ declare module '@tanstack/react-router' {
       path: '/activities/$slug'
       fullPath: '/activities/$slug'
       preLoaderRoute: typeof ActivitiesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin': {
+      id: '/api/admin'
+      path: '/api/admin'
+      fullPath: '/api/admin'
+      preLoaderRoute: typeof ApiAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/contact': {
+      id: '/api/contact'
+      path: '/api/contact'
+      fullPath: '/api/contact'
+      preLoaderRoute: typeof ApiContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/telemetry': {
@@ -200,6 +240,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ActivitiesSlugRoute: ActivitiesSlugRoute,
+  ApiAdminRoute: ApiAdminRoute,
+  ApiContactRoute: ApiContactRoute,
   ApiTelemetryRoute: ApiTelemetryRoute,
   CertificationsSlugRoute: CertificationsSlugRoute,
   ExperienceSlugRoute: ExperienceSlugRoute,

@@ -203,40 +203,46 @@ export function OverviewTab({ data }: OverviewTabProps) {
             <p className="text-xs text-white/50">Ranked by total views and average dwell time</p>
           </CardHeader>
           <CardContent>
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={topPages}
-                  layout="vertical"
-                  margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
-                >
-                  <XAxis type="number" stroke="#64748b" fontSize={11} hide />
-                  <YAxis
-                    type="category"
-                    dataKey="name"
-                    stroke="#94a3b8"
-                    fontSize={11}
-                    width={180}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#0B2A3B",
-                      borderColor: "rgba(255,255,255,0.15)",
-                      borderRadius: "8px",
-                      color: "#fff",
-                    }}
-                  />
-                  <Bar
-                    dataKey="views"
-                    name="Views"
-                    fill="#7CF9C9"
-                    radius={[0, 4, 4, 0]}
-                    barSize={16}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            {topPages.length === 0 ? (
+              <div className="flex h-64 items-center justify-center font-mono text-xs text-white/40">
+                No pageviews recorded yet. Live visits will chart here.
+              </div>
+            ) : (
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={topPages}
+                    layout="vertical"
+                    margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
+                  >
+                    <XAxis type="number" stroke="#64748b" fontSize={11} hide />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      stroke="#94a3b8"
+                      fontSize={11}
+                      width={180}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "#0B2A3B",
+                        borderColor: "rgba(255,255,255,0.15)",
+                        borderRadius: "8px",
+                        color: "#fff",
+                      }}
+                    />
+                    <Bar
+                      dataKey="views"
+                      name="Views"
+                      fill="#7CF9C9"
+                      radius={[0, 4, 4, 0]}
+                      barSize={16}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -306,28 +312,37 @@ export function OverviewTab({ data }: OverviewTabProps) {
           <p className="text-xs text-white/50">Visitor density categorized by city and country</p>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {geoBreakdown.map((geo) => (
-              <div
-                key={`${geo.country}-${geo.city}`}
-                className="flex items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] p-3"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-white text-xs">{geo.city}</span>
-                    <Badge variant="outline" className="border-white/20 text-[10px] text-white/60">
-                      {geo.code}
-                    </Badge>
+          {geoBreakdown.length === 0 ? (
+            <div className="py-8 text-center font-mono text-xs text-white/40">
+              No geographical sessions recorded yet. Real visitor regions will appear here.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {geoBreakdown.map((geo) => (
+                <div
+                  key={`${geo.country}-${geo.city}`}
+                  className="flex items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] p-3"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-white text-xs">{geo.city}</span>
+                      <Badge
+                        variant="outline"
+                        className="border-white/20 text-[10px] text-white/60"
+                      >
+                        {geo.code}
+                      </Badge>
+                    </div>
+                    <p className="text-[11px] text-white/40">{geo.country}</p>
                   </div>
-                  <p className="text-[11px] text-white/40">{geo.country}</p>
+                  <div className="text-right">
+                    <div className="font-mono text-xs font-bold text-[#7CF9C9]">{geo.visits}</div>
+                    <div className="text-[10px] text-white/40">{geo.percent}%</div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="font-mono text-xs font-bold text-[#7CF9C9]">{geo.visits}</div>
-                  <div className="text-[10px] text-white/40">{geo.percent}%</div>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

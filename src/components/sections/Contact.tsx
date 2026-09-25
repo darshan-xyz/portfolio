@@ -24,6 +24,19 @@ export function ContactSection() {
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !message.trim()) return;
+
+    // Send real inquiry to server-side CRM store
+    fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: name.trim(),
+        email: email.trim(),
+        company: company.trim(),
+        message: message.trim(),
+      }),
+    }).catch(() => {});
+
     const subject = encodeURIComponent(
       `[Portfolio] ${name.trim()}${company ? ` @ ${company.trim()}` : ""}`,
     );

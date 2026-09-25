@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import { ShieldCheck, Lock, ArrowRight, KeyRound, AlertCircle } from "lucide-react";
-import { INITIAL_ADMIN_DATA } from "@/lib/admin/seed-data";
+import { useState, useEffect, useCallback } from "react";
+import { ShieldCheck, Lock, ArrowRight, AlertCircle, RefreshCw } from "lucide-react";
+import type { AdminDashboardData } from "@/lib/admin/types";
+import type { AuditLogEntry } from "@/lib/admin/telemetry-store";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { OverviewTab } from "@/components/admin/OverviewTab";
 import { VisitorsTab } from "@/components/admin/VisitorsTab";
@@ -12,6 +13,29 @@ import { SecurityTab } from "@/components/admin/SecurityTab";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+
+const EMPTY_DATA: AdminDashboardData = {
+  stats: {
+    totalViews: 0,
+    uniqueVisitors: 0,
+    avgDwellSeconds: 0,
+    resumeDownloads: 0,
+    targetCompanyVisits: 0,
+    viewsTrendPercent: 0,
+    visitorsTrendPercent: 0,
+  },
+  trafficSeries: [],
+  topPages: [],
+  deviceBreakdown: [
+    { name: "Desktop", value: 100 },
+    { name: "Mobile", value: 0 },
+    { name: "Tablet", value: 0 },
+    { name: "Bot", value: 0 },
+  ],
+  geoBreakdown: [],
+  visitors: [],
+  inquiries: [],
+};
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -29,6 +53,30 @@ function AdminPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
 
+  // Real-time live state
+  const [dashboardData, setDashboardData] = useState<AdminDashboardData>(EMPTY_DATA);
+  const [activeVisitorsCount, setActiveVisitorsCount] = useState<number>(0);
+  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const fetchRealData = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin");
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data) {
+          setDashboardData(json.data);
+          setActiveVisitorsCount(json.activeCount ?? 0);
+          if (json.auditLogs) setAuditLogs(json.auditLogs);
+        }
+      }
+    } catch {
+      // Offline or network error
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     // Check if session has stored authentication
     if (typeof window !== "undefined") {
@@ -39,9 +87,25 @@ function AdminPage() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    fetchRealData();
+
+    // Log admin access in real audit log
+    fetch("/api/admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "audit_login" }),
+    }).catch(() => {});
+
+    // Polling every 3 seconds for 100% real-time pulse
+    const interval = setInterval(fetchRealData, 3000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated, fetchRealData]);
+
   const handleLogin = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    // Default master passcodes: "darshan2026", "admin", or "archon"
     const validCodes = ["darshan2026", "admin", "archon", "darshan"];
     if (validCodes.includes(passcode.trim().toLowerCase())) {
       setIsAuthenticated(true);
@@ -142,18 +206,18 @@ function AdminPage() {
       <AdminHeader
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        activeVisitorsCount={4}
+        activeVisitorsCount={activeVisitorsCount}
         onLogout={handleLogout}
       />
 
       {/* Main Content Area */}
       <main className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6">
-        {activeTab === "overview" && <OverviewTab data={INITIAL_ADMIN_DATA} />}
-        {activeTab === "visitors" && <VisitorsTab visitors={INITIAL_ADMIN_DATA.visitors} />}
-        {activeTab === "crm" && <CrmTab inquiries={INITIAL_ADMIN_DATA.inquiries} />}
+        {activeTab === "overview" && <OverviewTab data={dashboardData} />}
+        {activeTab === "visitors" && <VisitorsTab visitors={dashboardData.visitors} />}
+        {activeTab === "crm" && <CrmTab inquiries={dashboardData.inquiries} />}
         {activeTab === "cms" && <CmsTab />}
         {activeTab === "observability" && <ObservabilityTab />}
-        {activeTab === "security" && <SecurityTab />}
+        {activeTab === "security" && <SecurityTab auditLogs={auditLogs} />}
       </main>
     </div>
   );

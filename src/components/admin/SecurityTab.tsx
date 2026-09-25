@@ -11,42 +11,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-const AUDIT_LOGS = [
-  {
-    id: "aud-01",
-    action: "cms.resume_switch",
-    detail: "Promoted 'Darshan_R_Resume.pdf' (v2.5-ai-ml-lead) to active live download",
-    actor: "darshanr2005@gmail.com",
-    ip: "103.21.244.15",
-    time: "Sep 24, 2026, 08:30 PM",
-  },
-  {
-    id: "aud-02",
-    action: "crm.stage_change",
-    detail: "Advanced lead 'Sarah Lin (Horizon Edge Robotics)' to screening",
-    actor: "darshanr2005@gmail.com",
-    ip: "103.21.244.15",
-    time: "Sep 24, 2026, 02:15 PM",
-  },
-  {
-    id: "aud-03",
-    action: "auth.admin_login",
-    detail: "Successful passwordless admin authentication via TOTP MFA",
-    actor: "darshanr2005@gmail.com",
-    ip: "103.21.244.15",
-    time: "Sep 24, 2026, 09:12 AM",
-  },
-  {
-    id: "aud-04",
-    action: "security.telemetry_sync",
-    detail: "First-party telemetry pipeline connected to Supabase PostgreSQL",
-    actor: "SYSTEM",
-    ip: "127.0.0.1",
-    time: "Sep 23, 2026, 07:45 PM",
-  },
-];
+import type { AuditLogEntry } from "@/lib/admin/telemetry-store";
 
-export function SecurityTab() {
+interface SecurityTabProps {
+  auditLogs?: AuditLogEntry[];
+}
+
+export function SecurityTab({ auditLogs = [] }: SecurityTabProps) {
   return (
     <div className="space-y-6">
       <div>
@@ -119,28 +90,36 @@ export function SecurityTab() {
         </CardHeader>
         <CardContent>
           <div className="divide-y divide-white/5">
-            {AUDIT_LOGS.map((log) => (
-              <div
-                key={log.id}
-                className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant="outline"
-                      className="border-white/20 font-mono text-[9px] text-[#7CF9C9]"
-                    >
-                      {log.action}
-                    </Badge>
-                    <span className="font-medium text-white">{log.detail}</span>
+            {auditLogs.length === 0 ? (
+              <div className="py-6 text-center text-xs text-white/40">
+                No audit entries recorded yet. System listening...
+              </div>
+            ) : (
+              auditLogs.map((log) => (
+                <div
+                  key={log.id}
+                  className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant="outline"
+                        className="border-white/20 font-mono text-[9px] text-[#7CF9C9]"
+                      >
+                        {log.action}
+                      </Badge>
+                      <span className="font-medium text-white">{log.detail}</span>
+                    </div>
+                    <div className="mt-1 font-mono text-[10px] text-white/40">
+                      Actor: {log.actor} · IP: {log.ip}
+                    </div>
                   </div>
-                  <div className="mt-1 font-mono text-[10px] text-white/40">
-                    Actor: {log.actor} · IP: {log.ip}
+                  <div className="font-mono text-[11px] text-white/50 sm:text-right">
+                    {log.time}
                   </div>
                 </div>
-                <div className="font-mono text-[11px] text-white/50 sm:text-right">{log.time}</div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </CardContent>
       </Card>

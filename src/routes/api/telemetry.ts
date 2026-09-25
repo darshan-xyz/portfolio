@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { UAParser } from "ua-parser-js";
 import { isbot } from "isbot";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { recordSession } from "@/lib/admin/telemetry-store";
 import type { TelemetryBatchPayload } from "@/lib/telemetry/types";
 
 const KNOWN_TECH_ASNS: Record<string, string> = {
@@ -121,23 +122,31 @@ export const Route = createFileRoute("/api/telemetry")({
             ended_at: new Date().toISOString(),
           };
 
-          // Append to in-memory buffer
-          inMemoryBuffer.push({
-            session: sessionRecord,
-            events: body.events.map((e) => ({
-              event_name: e.eventName,
-              page_path: e.path,
-              section_id: e.sectionId || null,
-              payload: e.payload || {},
-              dwell_increment_seconds: e.dwellIncrementSeconds || 0,
-              created_at: e.timestamp || new Date().toISOString(),
-            })),
+          // Record into real-time shared store
+          recordSession({
+            sessionToken: body.sessionToken,
+            visitorHash: body.visitorHash || "anon",
+            rawIp,
+            countryCode,
+            city,
+            region,
+            asnNumber: asnNumber || null,
+            asnOrg: matchedCompany,
+            deviceType,
+            os: uaParsed.os.name || "Unknown",
+            browser: uaParsed.browser.name || "Unknown",
+            gpuRenderer: body.device?.gpuRenderer || null,
+            screenWidth: body.device?.screenWidth || 0,
+            screenHeight: body.device?.screenHeight || 0,
+            referrer: body.referrer || null,
+            utmSource: body.utm?.source || null,
+            utmCampaign: body.utm?.campaign || null,
+            activeDwellSeconds: body.activeDwellSeconds || 0,
+            maxScrollPercentage: body.maxScrollPercentage || 0,
+            hasResumeDownload: hasResume,
+            hasContactIntent: hasContact,
+            events: body.events,
           });
-
-          // Truncate buffer to last 1000 records
-          if (inMemoryBuffer.length > 1000) {
-            inMemoryBuffer.splice(0, inMemoryBuffer.length - 1000);
-          }
 
           // Asynchronously persist to Supabase if available
           const supabase = createServerSupabaseClient();
