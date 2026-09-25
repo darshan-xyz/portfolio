@@ -19,13 +19,14 @@ export function ContactSection() {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [message, setMessage] = useState("");
+  const [honeypot, setHoneypot] = useState("");
   const [sent, setSent] = useState(false);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !message.trim()) return;
 
-    // Send real inquiry to server-side CRM store
+    // Send real inquiry to server-side CRM store with bot protection
     fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -34,6 +35,7 @@ export function ContactSection() {
         email: email.trim(),
         company: company.trim(),
         message: message.trim(),
+        website: honeypot,
       }),
     }).catch(() => {});
 
@@ -120,6 +122,18 @@ export function ContactSection() {
             <span className="text-accent">▤ compose_message.exe</span>
             <span>secure_channel · e2e</span>
           </div>
+
+          {/* Invisible honeypot field to trap automated spambots */}
+          <input
+            type="text"
+            name="website"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+            className="hidden absolute -left-[9999px]"
+            aria-hidden="true"
+          />
 
           <div className="grid gap-4 md:grid-cols-2">
             <label className="block">

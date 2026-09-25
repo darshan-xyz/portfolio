@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { recordInquiry } from "@/lib/admin/telemetry-store";
+import { recordInquiry, recordAuditLog } from "@/lib/admin/telemetry-store";
+import { checkRateLimit } from "@/lib/security/rate-limiter";
 
 export const Route = createFileRoute("/api/contact")({
   server: {
@@ -17,7 +18,45 @@ export const Route = createFileRoute("/api/contact")({
             email?: string;
             company?: string;
             message?: string;
+            website?: string;
+            _gotcha?: string;
+            gotcha?: string;
           } | null;
+
+          // Honeypot anti-bot filter (silent absorption)
+          if (body?.website || body?._gotcha || body?.gotcha) {
+            recordAuditLog(
+              "security.honeypot_trapped",
+              `Automated bot trapped in hidden honeypot input`,
+              rawIp,
+            );
+            return new Response(JSON.stringify({ success: true, inquiryId: "inq-bot-filtered" }), {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          // Active token bucket rate limiting (5 req / 10 min)
+          const rateCheck = checkRateLimit(rawIp, "contact");
+          if (!rateCheck.allowed) {
+            recordAuditLog(
+              "security.contact_throttled",
+              `Contact form rate limit exceeded (${rateCheck.current}/${rateCheck.limit} req / 10min)`,
+              rawIp,
+            );
+            return new Response(
+              JSON.stringify({
+                error: "Message limit exceeded. Please wait a few minutes before submitting again.",
+              }),
+              {
+                status: 429,
+                headers: {
+                  "Content-Type": "application/json",
+                  "Retry-After": String(Math.ceil(rateCheck.resetMs / 1000)),
+                },
+              },
+            );
+          }
 
           if (!body || !body.name || !body.email || !body.message) {
             return new Response(JSON.stringify({ error: "Missing required fields" }), {

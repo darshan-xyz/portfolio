@@ -6,6 +6,7 @@ import {
   updateInquiryStage,
   recordAuditLog,
 } from "@/lib/admin/telemetry-store";
+import { getSecurityDiagnostics } from "@/lib/security/rate-limiter";
 
 export const Route = createFileRoute("/api/admin")({
   server: {
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/api/admin")({
           const dashboardData = getLiveDashboardData();
           const activeCount = getActiveVisitorsCount();
           const auditLogs = getAuditLogs();
+          const securityDiagnostics = getSecurityDiagnostics();
 
           return new Response(
             JSON.stringify({
@@ -22,6 +24,7 @@ export const Route = createFileRoute("/api/admin")({
               data: dashboardData,
               activeCount,
               auditLogs,
+              securityDiagnostics,
             }),
             {
               status: 200,

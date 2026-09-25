@@ -27,7 +27,7 @@ const EMPTY_DATA: AdminDashboardData = {
   trafficSeries: [],
   topPages: [],
   deviceBreakdown: [
-    { name: "Desktop", value: 100 },
+    { name: "Desktop", value: 0 },
     { name: "Mobile", value: 0 },
     { name: "Tablet", value: 0 },
     { name: "Bot", value: 0 },
@@ -58,6 +58,15 @@ function AdminPage() {
   const [dashboardData, setDashboardData] = useState<AdminDashboardData>(EMPTY_DATA);
   const [activeVisitorsCount, setActiveVisitorsCount] = useState<number>(0);
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
+  const [securityDiagnostics, setSecurityDiagnostics] = useState<{
+    telemetryLimit: string;
+    contactLimit: string;
+    totalEvaluated: number;
+    totalBlocked: number;
+    activeTrackedIps: number;
+    lastBlockedAt?: string;
+    lastBlockedIp?: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchRealData = useCallback(async () => {
@@ -69,6 +78,7 @@ function AdminPage() {
           setDashboardData(json.data);
           setActiveVisitorsCount(json.activeCount ?? 0);
           if (json.auditLogs) setAuditLogs(json.auditLogs);
+          if (json.securityDiagnostics) setSecurityDiagnostics(json.securityDiagnostics);
         }
       }
     } catch {
@@ -216,9 +226,11 @@ function AdminPage() {
         {activeTab === "overview" && <OverviewTab data={dashboardData} />}
         {activeTab === "visitors" && <VisitorsTab visitors={dashboardData.visitors} />}
         {activeTab === "crm" && <CrmTab inquiries={dashboardData.inquiries} />}
-        {activeTab === "cms" && <CmsTab />}
+        {activeTab === "cms" && <CmsTab resumeDownloads={dashboardData.stats.resumeDownloads} />}
         {activeTab === "observability" && <ObservabilityTab data={dashboardData} />}
-        {activeTab === "security" && <SecurityTab auditLogs={auditLogs} />}
+        {activeTab === "security" && (
+          <SecurityTab auditLogs={auditLogs} securityDiagnostics={securityDiagnostics} />
+        )}
       </main>
     </div>
   );

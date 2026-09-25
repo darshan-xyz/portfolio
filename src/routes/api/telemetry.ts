@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { UAParser } from "ua-parser-js";
 import { isbot } from "isbot";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { recordSession } from "@/lib/admin/telemetry-store";
+import { recordSession, recordAuditLog } from "@/lib/admin/telemetry-store";
+import { checkRateLimit } from "@/lib/security/rate-limiter";
 import type { TelemetryBatchPayload } from "@/lib/telemetry/types";
 
 const KNOWN_TECH_ASNS: Record<string, string> = {
@@ -35,6 +36,26 @@ export const Route = createFileRoute("/api/telemetry")({
             request.headers.get("x-real-ip") ||
             request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
             "127.0.0.1";
+
+          // Enforce active sliding-window token bucket rate limiting
+          const rateCheck = checkRateLimit(rawIp, "telemetry");
+          if (!rateCheck.allowed) {
+            recordAuditLog(
+              "security.telemetry_throttled",
+              `Telemetry rate limit exceeded for ${rawIp} (${rateCheck.current}/${rateCheck.limit} req/min)`,
+              rawIp,
+            );
+            return new Response(
+              JSON.stringify({ error: "Too many requests. Please wait before sending telemetry." }),
+              {
+                status: 429,
+                headers: {
+                  "Content-Type": "application/json",
+                  "Retry-After": String(Math.ceil(rateCheck.resetMs / 1000)),
+                },
+              },
+            );
+          }
 
           const rawUserAgent = request.headers.get("user-agent") || "";
           const isBot = isbot(rawUserAgent);

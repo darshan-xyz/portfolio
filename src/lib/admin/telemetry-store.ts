@@ -96,17 +96,27 @@ const auditLogsList = (globalForTelemetry.__auditLogsList ??= [
   },
 ]);
 
-export function recordAuditLog(
-  action: string,
-  detail: string,
-  ip: string,
-  actor = "darshanr2005@gmail.com",
-) {
+export function recordAuditLog(action: string, detail: string, ip: string, actor?: string) {
+  let resolvedActor = actor;
+  if (!resolvedActor) {
+    if (action.startsWith("security.")) {
+      resolvedActor = `SecurityGuard (${ip})`;
+    } else if (action.startsWith("auth.")) {
+      resolvedActor = `AdminAuth (${ip})`;
+    } else if (action.startsWith("crm.")) {
+      resolvedActor = `AdminOperator (${ip})`;
+    } else if (action.startsWith("telemetry.")) {
+      resolvedActor = `TelemetryIngest (${ip})`;
+    } else {
+      resolvedActor = `System (${ip})`;
+    }
+  }
+
   auditLogsList.unshift({
     id: `aud-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     action,
     detail,
-    actor,
+    actor: resolvedActor,
     ip,
     time: new Date().toLocaleTimeString(),
   });
@@ -517,13 +527,33 @@ export function getLiveDashboardData(): AdminDashboardData {
         hasContactIntent: s.hasContactIntent,
         timestamp: timeAgo,
         eventsCount: s.events.length,
-        timeline: s.events.map((e, idx) => ({
-          time: `+${idx * 12}s`,
-          event: e.eventName.replace(/_/g, " ").toUpperCase(),
-          detail: `${e.path} ${e.sectionId ? `(#${e.sectionId})` : ""}`,
-        })),
+        timeline: s.events.map((e) => {
+          const eventTime = new Date(e.timestamp).getTime();
+          const diffSec = Number.isNaN(eventTime)
+            ? 0
+            : Math.max(0, Math.round((eventTime - s.startedAt) / 1000));
+          return {
+            time: `+${diffSec}s`,
+            event: e.eventName.replace(/_/g, " ").toUpperCase(),
+            detail: `${e.path || "/"} ${e.sectionId ? `(#${e.sectionId})` : ""}`.trim(),
+          };
+        }),
       };
     });
+
+  const mid = Math.floor(trafficSeries.length / 2);
+  const firstHalf = trafficSeries.slice(0, mid);
+  const secondHalf = trafficSeries.slice(mid);
+
+  const prevViews = firstHalf.reduce((sum, d) => sum + d.views, 0);
+  const currViews = secondHalf.reduce((sum, d) => sum + d.views, 0);
+  const viewsTrendPercent =
+    prevViews > 0 ? Math.round(((currViews - prevViews) / prevViews) * 100) : 0;
+
+  const prevVisitors = firstHalf.reduce((sum, d) => sum + d.visitors, 0);
+  const currVisitors = secondHalf.reduce((sum, d) => sum + d.visitors, 0);
+  const visitorsTrendPercent =
+    prevVisitors > 0 ? Math.round(((currVisitors - prevVisitors) / prevVisitors) * 100) : 0;
 
   return {
     stats: {
@@ -532,8 +562,8 @@ export function getLiveDashboardData(): AdminDashboardData {
       avgDwellSeconds,
       resumeDownloads,
       targetCompanyVisits,
-      viewsTrendPercent: totalViews > 0 ? 100 : 0,
-      visitorsTrendPercent: uniqueVisitors > 0 ? 100 : 0,
+      viewsTrendPercent,
+      visitorsTrendPercent,
     },
     trafficSeries,
     topPages,

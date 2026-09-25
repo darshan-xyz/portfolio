@@ -5,6 +5,7 @@ import {
   Download,
   Building2,
   TrendingUp,
+  TrendingDown,
   Globe,
   Monitor,
   Compass,
@@ -88,9 +89,26 @@ export function OverviewTab({ data }: OverviewTabProps) {
             <div className="text-2xl font-bold tracking-tight text-white">
               {stats.totalViews.toLocaleString()}
             </div>
-            <div className="mt-1 flex items-center text-xs text-emerald-400">
-              <TrendingUp className="mr-1 h-3 w-3" />+{stats.viewsTrendPercent}% this week
-            </div>
+            {stats.viewsTrendPercent !== 0 ? (
+              <div
+                className={`mt-1 flex items-center text-xs ${stats.viewsTrendPercent > 0 ? "text-emerald-400" : "text-rose-400"}`}
+              >
+                {stats.viewsTrendPercent > 0 ? (
+                  <TrendingUp className="mr-1 h-3 w-3" />
+                ) : (
+                  <TrendingDown className="mr-1 h-3 w-3" />
+                )}
+                {stats.viewsTrendPercent > 0
+                  ? `+${stats.viewsTrendPercent}%`
+                  : `${stats.viewsTrendPercent}%`}{" "}
+                vs prior period
+              </div>
+            ) : (
+              <div className="mt-1 flex items-center text-xs text-white/40">
+                <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/50" />
+                Baseline period (first 7 days)
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -105,9 +123,26 @@ export function OverviewTab({ data }: OverviewTabProps) {
             <div className="text-2xl font-bold tracking-tight text-white">
               {stats.uniqueVisitors.toLocaleString()}
             </div>
-            <div className="mt-1 flex items-center text-xs text-sky-400">
-              <TrendingUp className="mr-1 h-3 w-3" />+{stats.visitorsTrendPercent}% unique reach
-            </div>
+            {stats.visitorsTrendPercent !== 0 ? (
+              <div
+                className={`mt-1 flex items-center text-xs ${stats.visitorsTrendPercent > 0 ? "text-sky-400" : "text-rose-400"}`}
+              >
+                {stats.visitorsTrendPercent > 0 ? (
+                  <TrendingUp className="mr-1 h-3 w-3" />
+                ) : (
+                  <TrendingDown className="mr-1 h-3 w-3" />
+                )}
+                {stats.visitorsTrendPercent > 0
+                  ? `+${stats.visitorsTrendPercent}%`
+                  : `${stats.visitorsTrendPercent}%`}{" "}
+                vs prior period
+              </div>
+            ) : (
+              <div className="mt-1 flex items-center text-xs text-white/40">
+                <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-sky-400/50" />
+                100% authentic reach
+              </div>
+            )}
           </CardContent>
         </Card>
 

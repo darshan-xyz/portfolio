@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Mail,
   Building,
@@ -13,6 +13,7 @@ import type { CrmInquiryRecord } from "@/lib/admin/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface CrmTabProps {
   inquiries: CrmInquiryRecord[];
@@ -29,10 +30,36 @@ const STAGES: Array<{ id: CrmInquiryRecord["pipelineStage"]; label: string }> = 
 export function CrmTab({ inquiries: initialInquiries }: CrmTabProps) {
   const [inquiries, setInquiries] = useState<CrmInquiryRecord[]>(initialInquiries);
 
-  const moveStage = (id: string, nextStage: CrmInquiryRecord["pipelineStage"]) => {
+  // Synchronize with incoming real-time poll updates
+  useEffect(() => {
+    setInquiries(initialInquiries);
+  }, [initialInquiries]);
+
+  const moveStage = async (id: string, nextStage: CrmInquiryRecord["pipelineStage"]) => {
+    // Optimistic UI update
     setInquiries((prev) =>
       prev.map((inq) => (inq.id === id ? { ...inq, pipelineStage: nextStage } : inq)),
     );
+
+    try {
+      const res = await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "update_stage",
+          id,
+          stage: nextStage,
+        }),
+      });
+
+      if (res.ok) {
+        toast.success(`Inquiry moved to "${nextStage}" stage`);
+      } else {
+        toast.error("Failed to persist stage change to server");
+      }
+    } catch {
+      toast.error("Network error updating inquiry stage");
+    }
   };
 
   return (
@@ -44,7 +71,7 @@ export function CrmTab({ inquiries: initialInquiries }: CrmTabProps) {
             RECRUITMENT & INQUIRY PIPELINE (CRM)
           </h2>
           <p className="text-xs text-white/50">
-            Inbound opportunities with automated AI sentiment analysis and lifecycle progression
+            Real inbound opportunities submitted through portfolio contact channels
           </p>
         </div>
 
@@ -54,6 +81,12 @@ export function CrmTab({ inquiries: initialInquiries }: CrmTabProps) {
             className="border-emerald-500/30 bg-emerald-500/10 font-mono text-xs text-emerald-400"
           >
             {inquiries.filter((i) => i.pipelineStage === "new").length} New Inquiries
+          </Badge>
+          <Badge
+            variant="outline"
+            className="border-white/10 bg-white/5 font-mono text-xs text-white/60"
+          >
+            {inquiries.length} Total Messages
           </Badge>
         </div>
       </div>
@@ -80,7 +113,7 @@ export function CrmTab({ inquiries: initialInquiries }: CrmTabProps) {
               {/* Cards in Column */}
               <div className="flex-1 space-y-3">
                 {stageInquiries.length === 0 ? (
-                  <div className="flex h-32 items-center justify-center rounded-lg border border-dashed border-white/5 text-[11px] text-white/30">
+                  <div className="flex h-32 items-center justify-center rounded-lg border border-dashed border-white/5 text-[11px] text-white/30 text-center p-3 font-mono">
                     No leads in {stage.label.toLowerCase()}
                   </div>
                 ) : (
@@ -109,83 +142,64 @@ export function CrmTab({ inquiries: initialInquiries }: CrmTabProps) {
                           </Badge>
                         </div>
 
-                        {/* Company & Role */}
-                        <div className="flex items-center gap-1.5 rounded bg-white/[0.03] p-1.5 text-[11px] text-white/70">
-                          <Building className="h-3 w-3 shrink-0 text-[#7CF9C9]" />
-                          <span className="truncate">{inq.company}</span>
-                        </div>
-
-                        {/* AI Summary Badge */}
-                        <div className="rounded border border-purple-500/20 bg-purple-500/10 p-2 text-[10px] text-purple-200">
-                          <div className="flex items-center gap-1 font-mono text-[9px] text-purple-300 mb-0.5">
-                            <Sparkles className="h-2.5 w-2.5" />
-                            AI TRIAGE SUMMARY
+                        {/* Company & Email */}
+                        <div className="space-y-1 text-xs">
+                          {inq.company && inq.company !== "Not specified" && (
+                            <div className="flex items-center gap-1.5 text-white/80">
+                              <Building className="h-3 w-3 text-white/40" />
+                              <span className="font-medium text-[11px]">{inq.company}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1.5 text-white/60">
+                            <Mail className="h-3 w-3 text-white/40" />
+                            <a
+                              href={`mailto:${inq.email}`}
+                              className="font-mono text-[10px] hover:text-[#7CF9C9] truncate max-w-[180px]"
+                            >
+                              {inq.email}
+                            </a>
                           </div>
-                          <p className="line-clamp-2 leading-relaxed">{inq.aiSummary}</p>
                         </div>
 
-                        {/* Raw Message Preview */}
-                        <p className="text-[11px] text-white/60 line-clamp-3 italic">
+                        {/* Message Content */}
+                        <div className="rounded border border-white/5 bg-white/[0.02] p-2 text-[11px] text-white/80 line-clamp-3">
                           "{inq.message}"
-                        </p>
+                        </div>
 
-                        <div className="text-[10px] text-white/30 font-mono">{inq.createdAt}</div>
+                        {/* Opportunity Type & Timestamp */}
+                        <div className="flex items-center justify-between text-[10px] text-white/40 border-t border-white/5 pt-2">
+                          <span className="font-mono">{inq.opportunityType}</span>
+                          <span>{inq.createdAt}</span>
+                        </div>
 
-                        {/* Card Actions */}
-                        <div className="flex items-center justify-between border-t border-white/5 pt-2">
-                          <a
-                            href={`mailto:${inq.email}?subject=${encodeURIComponent(`Re: ${inq.opportunityType} inquiry — Darshan R`)}`}
-                            className="inline-flex items-center gap-1 text-[11px] text-[#7CF9C9] hover:underline"
-                          >
-                            <Mail className="h-3 w-3" />
-                            Reply
-                          </a>
-
-                          <div className="flex items-center gap-1">
-                            {stage.id === "new" && (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => moveStage(inq.id, "screening")}
-                                className="h-6 px-1.5 text-[10px] text-sky-400 hover:bg-sky-500/10"
-                              >
-                                Screening
-                                <ArrowRight className="ml-1 h-2.5 w-2.5" />
-                              </Button>
-                            )}
-                            {stage.id === "screening" && (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => moveStage(inq.id, "interview")}
-                                className="h-6 px-1.5 text-[10px] text-amber-400 hover:bg-amber-500/10"
-                              >
-                                Interview
-                                <ArrowRight className="ml-1 h-2.5 w-2.5" />
-                              </Button>
-                            )}
-                            {stage.id === "interview" && (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => moveStage(inq.id, "offer")}
-                                className="h-6 px-1.5 text-[10px] text-emerald-400 hover:bg-emerald-500/10"
-                              >
-                                Offer
-                                <CheckCircle2 className="ml-1 h-2.5 w-2.5" />
-                              </Button>
-                            )}
-                            {stage.id !== "archived" && (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => moveStage(inq.id, "archived")}
-                                className="h-6 px-1.5 text-[10px] text-white/40 hover:bg-white/5 hover:text-white"
-                              >
-                                <Archive className="h-2.5 w-2.5" />
-                              </Button>
-                            )}
-                          </div>
+                        {/* Pipeline Stage Movement Controls */}
+                        <div className="flex items-center justify-between gap-1 border-t border-white/5 pt-2">
+                          {stage.id !== "new" && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const idx = STAGES.findIndex((s) => s.id === stage.id);
+                                if (idx > 0) moveStage(inq.id, STAGES[idx - 1].id);
+                              }}
+                              className="h-6 px-1.5 text-[10px] text-white/50 hover:text-white"
+                            >
+                              ← Back
+                            </Button>
+                          )}
+                          {stage.id !== "archived" && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const idx = STAGES.findIndex((s) => s.id === stage.id);
+                                if (idx < STAGES.length - 1) moveStage(inq.id, STAGES[idx + 1].id);
+                              }}
+                              className="ml-auto h-6 gap-1 px-1.5 text-[10px] text-[#7CF9C9] hover:bg-[#7CF9C9]/10"
+                            >
+                              Advance →
+                            </Button>
+                          )}
                         </div>
                       </CardContent>
                     </Card>

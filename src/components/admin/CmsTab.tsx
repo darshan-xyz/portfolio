@@ -10,6 +10,7 @@ import {
   Star,
   Eye,
   Github,
+  Download,
 } from "lucide-react";
 import { projects as defaultProjects, type Project } from "@/data/portfolio";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,60 +19,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
-interface ResumeVersion {
-  id: string;
-  tag: string;
-  fileName: string;
-  fileSize: string;
-  uploadedAt: string;
-  downloadCount: number;
-  isActive: boolean;
+interface CmsTabProps {
+  resumeDownloads?: number;
 }
 
-const INITIAL_RESUMES: ResumeVersion[] = [
-  {
-    id: "res-01",
-    tag: "v2.5-ai-ml-lead",
-    fileName: "Darshan_R_Resume.pdf",
-    fileSize: "177 KB",
-    uploadedAt: "Sep 23, 2026",
-    downloadCount: 198,
-    isActive: true,
-  },
-  {
-    id: "res-02",
-    tag: "v2.4-general-cs",
-    fileName: "Darshan_R_CV_Classic.pdf",
-    fileSize: "165 KB",
-    uploadedAt: "Aug 15, 2026",
-    downloadCount: 142,
-    isActive: false,
-  },
-  {
-    id: "res-03",
-    tag: "v2.0-internship",
-    fileName: "Darshan_Resume_2025.pdf",
-    fileSize: "152 KB",
-    uploadedAt: "June 2025",
-    downloadCount: 89,
-    isActive: false,
-  },
-];
-
-export function CmsTab() {
+export function CmsTab({ resumeDownloads = 0 }: CmsTabProps) {
   const [projectsList, setProjectsList] = useState<Project[]>(defaultProjects);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [resumes, setResumes] = useState<ResumeVersion[]>(INITIAL_RESUMES);
-
-  const setActiveResume = (id: string) => {
-    setResumes((prev) =>
-      prev.map((r) => ({
-        ...r,
-        isActive: r.id === id,
-      })),
-    );
-    toast.success("Active resume version updated across portfolio!");
-  };
 
   const handleSaveProject = () => {
     if (!editingProject) return;
@@ -84,100 +38,62 @@ export function CmsTab() {
 
   return (
     <div className="space-y-8">
-      {/* 1. Resume Asset Studio */}
+      {/* 1. Authentic Resume Asset Studio */}
       <Card className="border-white/10 bg-[#0B2A3B]/40 backdrop-blur-md">
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <div>
             <CardTitle className="font-mono text-sm text-white flex items-center gap-2">
               <FileText className="h-4 w-4 text-[#B8FF3A]" />
-              RESUME VERSION MANAGEMENT & ASSET STUDIO
+              AUTHENTIC RESUME ASSET & DOWNLOAD TELEMETRY
             </CardTitle>
             <p className="text-xs text-white/50">
-              Manage live active resume without redeploying. Download statistics are tracked per
-              version.
+              Verified active resume asset linked directly to real-time download telemetry
             </p>
           </div>
-
-          <Button
-            size="sm"
-            onClick={() =>
-              toast.info("Drag and drop file upload will connect to Supabase Storage.")
-            }
-            className="h-8 gap-1.5 bg-[#B8FF3A]/20 text-xs font-mono text-[#B8FF3A] hover:bg-[#B8FF3A]/30 border border-[#B8FF3A]/40"
-          >
-            <Upload className="h-3 w-3" />
-            Upload New Version
-          </Button>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {resumes.map((resume) => (
-              <div
-                key={resume.id}
-                className={`flex items-center justify-between rounded-lg border p-3.5 transition-colors ${
-                  resume.isActive
-                    ? "border-[#B8FF3A]/40 bg-[#B8FF3A]/[0.03]"
-                    : "border-white/5 bg-white/[0.01]"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                      resume.isActive
-                        ? "bg-[#B8FF3A]/20 text-[#B8FF3A]"
-                        : "bg-white/5 text-white/40"
-                    }`}
-                  >
-                    <FileText className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-semibold text-white">
-                        {resume.fileName}
-                      </span>
-                      <Badge
-                        variant="outline"
-                        className="border-white/20 font-mono text-[9px] text-white/60"
-                      >
-                        {resume.tag}
-                      </Badge>
-                      {resume.isActive && (
-                        <Badge className="border-[#B8FF3A]/40 bg-[#B8FF3A]/20 font-mono text-[9px] text-[#B8FF3A]">
-                          CURRENT LIVE VERSION
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="text-[11px] text-white/40">
-                      Size: {resume.fileSize} · Uploaded: {resume.uploadedAt} ·{" "}
-                      <span className="text-[#B8FF3A] font-mono">
-                        {resume.downloadCount} downloads
-                      </span>
-                    </div>
-                  </div>
+          <div className="rounded-xl border border-white/10 bg-[#040914]/80 p-4 transition-all hover:border-[#7CF9C9]/40">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#B8FF3A]/30 bg-[#B8FF3A]/10 text-[#B8FF3A]">
+                  <FileText className="h-5 w-5" />
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <a
-                    href="/resume.pdf"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex h-8 items-center gap-1 rounded border border-white/10 px-2.5 text-xs text-white/70 hover:bg-white/5 hover:text-white"
-                  >
-                    <Eye className="h-3 w-3" />
-                    Preview
-                  </a>
-                  {!resume.isActive && (
-                    <Button
-                      size="sm"
-                      onClick={() => setActiveResume(resume.id)}
-                      className="h-8 bg-white/10 text-xs text-white hover:bg-white/20"
-                    >
-                      Make Active
-                    </Button>
-                  )}
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-sm text-white">Darshan_R_Resume.pdf</span>
+                    <Badge className="border-emerald-500/30 bg-emerald-500/10 text-[9px] text-emerald-400">
+                      LIVE ASSET
+                    </Badge>
+                  </div>
+                  <div className="text-[11px] text-white/40 mt-0.5">
+                    Size: 173 KB · Updated: Sep 23, 2026 ·{" "}
+                    <span className="text-[#B8FF3A] font-mono font-medium">
+                      {resumeDownloads} verified downloads
+                    </span>
+                  </div>
                 </div>
               </div>
-            ))}
+
+              <div className="flex items-center gap-2">
+                <a
+                  href="/resume.pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 font-mono text-xs text-white hover:bg-white/10 transition-colors"
+                >
+                  <Eye className="h-3.5 w-3.5 text-[#7CF9C9]" />
+                  Preview Asset
+                </a>
+                <a
+                  href="/resume.pdf"
+                  download="Darshan_R_Resume.pdf"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[#B8FF3A]/30 bg-[#B8FF3A]/10 px-3 font-mono text-xs text-[#B8FF3A] hover:bg-[#B8FF3A]/20 transition-colors"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  Direct Download
+                </a>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -187,10 +103,10 @@ export function CmsTab() {
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <div>
             <CardTitle className="font-mono text-sm text-white">
-              PROJECT CASE STUDIES & ARSENAL CMS
+              PROJECT CASE STUDIES & ARSENAL CMS ({projectsList.length} PROJECTS)
             </CardTitle>
             <p className="text-xs text-white/50">
-              Live updates to project highlights, tech stacks, and showcase ordering
+              Verified portfolio project showcase, tech stacks, and domain categorization
             </p>
           </div>
 
@@ -252,17 +168,30 @@ export function CmsTab() {
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-3 text-[11px] text-white/40">
-                  <span className="font-mono">/{project.slug}</span>
-                  <a
-                    href={`/projects/${project.slug}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-[#7CF9C9] hover:underline"
-                  >
-                    View Page
-                    <ExternalLink className="h-2.5 w-2.5" />
-                  </a>
+                <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-3">
+                  <div className="flex items-center gap-2">
+                    {project.github && (
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-white/40 hover:text-white"
+                      >
+                        <Github className="h-4 w-4" />
+                      </a>
+                    )}
+                    {project.demo && (
+                      <a
+                        href={project.demo}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-white/40 hover:text-white"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    )}
+                  </div>
+                  <span className="font-mono text-[10px] text-white/40">/{project.slug}</span>
                 </div>
               </div>
             ))}
@@ -270,18 +199,18 @@ export function CmsTab() {
         </CardContent>
       </Card>
 
-      {/* Project Edit Modal */}
+      {/* Edit Project Modal */}
       {editingProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-          <Card className="max-h-[90vh] w-full max-w-2xl overflow-y-auto border-white/10 bg-[#0B2A3B] text-white shadow-2xl">
-            <CardHeader className="border-b border-white/10 pb-3">
-              <CardTitle className="font-mono text-sm text-white">
+          <Card className="w-full max-w-xl border-white/10 bg-[#0B2A3B] text-white">
+            <CardHeader>
+              <CardTitle className="font-mono text-base text-white">
                 EDIT PROJECT // {editingProject.slug}
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 pt-4">
+            <CardContent className="space-y-4">
               <div>
-                <label className="text-xs text-white/50 block mb-1">Project Name</label>
+                <label className="text-xs text-white/60 block mb-1">Project Name</label>
                 <Input
                   value={editingProject.name}
                   onChange={(e) => setEditingProject({ ...editingProject, name: e.target.value })}
@@ -290,7 +219,7 @@ export function CmsTab() {
               </div>
 
               <div>
-                <label className="text-xs text-white/50 block mb-1">Domain</label>
+                <label className="text-xs text-white/60 block mb-1">Domain / Category</label>
                 <Input
                   value={editingProject.domain}
                   onChange={(e) => setEditingProject({ ...editingProject, domain: e.target.value })}
@@ -299,19 +228,19 @@ export function CmsTab() {
               </div>
 
               <div>
-                <label className="text-xs text-white/50 block mb-1">Summary</label>
+                <label className="text-xs text-white/60 block mb-1">Summary</label>
                 <textarea
-                  rows={3}
                   value={editingProject.summary}
                   onChange={(e) =>
                     setEditingProject({ ...editingProject, summary: e.target.value })
                   }
-                  className="w-full rounded-md border border-white/10 bg-white/5 p-2 text-xs text-white focus:border-[#7CF9C9] focus:outline-none"
+                  rows={2}
+                  className="w-full rounded-md border border-white/10 bg-white/5 p-2 text-xs text-white focus:outline-none focus:border-[#7CF9C9]"
                 />
               </div>
 
               <div>
-                <label className="text-xs text-white/50 block mb-1">
+                <label className="text-xs text-white/60 block mb-1">
                   Tech Stack (comma separated)
                 </label>
                 <Input
@@ -329,10 +258,10 @@ export function CmsTab() {
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
+              <div className="flex justify-end gap-2 pt-3">
                 <Button
-                  size="sm"
                   variant="ghost"
+                  size="sm"
                   onClick={() => setEditingProject(null)}
                   className="text-xs text-white/60 hover:text-white"
                 >
@@ -341,9 +270,8 @@ export function CmsTab() {
                 <Button
                   size="sm"
                   onClick={handleSaveProject}
-                  className="gap-1.5 bg-[#7CF9C9] text-xs font-semibold text-[#040914] hover:bg-[#7CF9C9]/90"
+                  className="bg-[#7CF9C9] text-xs font-mono font-semibold text-[#040914] hover:bg-[#7CF9C9]/90"
                 >
-                  <Save className="h-3 w-3" />
                   Save Changes
                 </Button>
               </div>

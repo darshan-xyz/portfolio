@@ -52,11 +52,17 @@ export function AdminHeader({
           <div className="hidden h-5 w-px bg-white/10 md:block" />
 
           {/* Real-time live presence counter */}
-          <div className="hidden items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-400 md:flex">
-            <Radio className="h-3.5 w-3.5 animate-pulse text-emerald-400" />
-            <span className="font-mono font-medium">
-              {activeVisitorsCount > 0 ? activeVisitorsCount : 3} ACTIVE NOW
-            </span>
+          <div
+            className={`hidden items-center gap-2 rounded-full px-2.5 py-1 text-xs md:flex ${
+              activeVisitorsCount > 0
+                ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                : "border border-white/10 bg-white/5 text-white/50"
+            }`}
+          >
+            <Radio
+              className={`h-3.5 w-3.5 ${activeVisitorsCount > 0 ? "animate-pulse text-emerald-400" : "text-white/40"}`}
+            />
+            <span className="font-mono font-medium">{activeVisitorsCount} ACTIVE NOW</span>
           </div>
         </div>
 
