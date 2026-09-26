@@ -92,8 +92,14 @@ export function ArchonSentinelView({ visitors = [] }: ArchonSentinelViewProps) {
 
       ctx.clearRect(0, 0, w, h);
 
+      const isDark =
+        typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+      const ringColor = isDark ? "rgba(124, 249, 201, 0.16)" : "rgba(13, 147, 115, 0.25)";
+      const sweepColor0 = isDark ? "rgba(124, 249, 201, 0.35)" : "rgba(13, 147, 115, 0.35)";
+      const nominalColor = isDark ? "#7CF9C9" : "#0D9373";
+
       // Draw concentric radar rings
-      ctx.strokeStyle = "rgba(124, 249, 201, 0.15)";
+      ctx.strokeStyle = ringColor;
       ctx.lineWidth = 1;
 
       for (let r = 0.25; r <= 1.0; r += 0.25) {
@@ -116,7 +122,7 @@ export function ArchonSentinelView({ visitors = [] }: ArchonSentinelViewProps) {
       const sweepY = cy + Math.sin(angleOffset) * radius;
 
       const grad = ctx.createLinearGradient(cx, cy, sweepX, sweepY);
-      grad.addColorStop(0, "rgba(124, 249, 201, 0.35)");
+      grad.addColorStop(0, sweepColor0);
       grad.addColorStop(1, "rgba(124, 249, 201, 0.0)");
 
       ctx.beginPath();
@@ -151,8 +157,8 @@ export function ArchonSentinelView({ visitors = [] }: ArchonSentinelViewProps) {
           ctx.shadowColor = "#f59e0b";
           ctx.shadowBlur = 5;
         } else {
-          ctx.fillStyle = "#7CF9C9";
-          ctx.shadowColor = "#7CF9C9";
+          ctx.fillStyle = nominalColor;
+          ctx.shadowColor = nominalColor;
           ctx.shadowBlur = 4;
         }
 

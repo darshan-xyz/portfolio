@@ -276,18 +276,18 @@ export function ArchonTerminal({ data }: ArchonTerminalProps) {
       </CardHeader>
       <CardContent className="p-4">
         {/* Terminal Screen Container */}
-        <div className="h-[440px] overflow-y-auto rounded-lg border border-border bg-[#040914] p-4 font-mono text-xs text-[#E6FFF3] shadow-inner">
+        <div className="h-[440px] overflow-y-auto rounded-lg border border-border bg-background p-4 font-mono text-xs text-foreground shadow-inner">
           <div className="space-y-2 whitespace-pre-wrap">
             {output.map((line) => (
               <div
                 key={line.id}
                 className={
                   line.type === "cmd"
-                    ? "text-[#7CF9C9] font-bold"
+                    ? "text-accent font-bold"
                     : line.type === "err"
                       ? "text-rose-400"
                       : line.type === "sys"
-                        ? "text-[#B8FF3A]"
+                        ? "text-accent-2"
                         : "text-muted-foreground"
                 }
               >
@@ -299,7 +299,7 @@ export function ArchonTerminal({ data }: ArchonTerminalProps) {
         </div>
 
         {/* Command Input Bar */}
-        <div className="mt-3 flex items-center gap-2 rounded-lg border border-border bg-[#040914] px-3 py-1.5 focus-within:border-accent">
+        <div className="mt-3 flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 focus-within:border-accent">
           <span className="text-accent font-bold">&gt;</span>
           <input
             ref={inputRef}

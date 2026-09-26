@@ -3,6 +3,7 @@ import { Activity, ShieldCheck, LogOut, Radio, RefreshCw, Volume2, VolumeX } fro
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cyberAudio } from "@/lib/admin/cyber-audio";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface AdminHeaderProps {
   activeTab: string;
@@ -12,16 +13,11 @@ interface AdminHeaderProps {
 }
 
 const TABS = [
-  { id: "overview", label: "Command Center" },
-  { id: "globe", label: "🌐 3D Neural Globe" },
-  { id: "ghost", label: "👻 Ghost Vector" },
-  { id: "sentinel", label: "🛡️ Sentinel Defense" },
-  { id: "terminal", label: "⚡ Matrix CLI" },
-  { id: "visitors", label: "Visitor Dossier" },
-  { id: "crm", label: "Recruiter CRM" },
-  { id: "cms", label: "Content & Resume" },
-  { id: "observability", label: "3D & Web Vitals" },
-  { id: "security", label: "Security & Audit" },
+  { id: "overview", label: "Command Center", badge: null },
+  { id: "intelligence", label: "Live Intelligence", badge: "3D & Vectors" },
+  { id: "security", label: "Cyber Sentinel", badge: "Active" },
+  { id: "crm", label: "Recruiter CRM", badge: null },
+  { id: "terminal", label: "Terminal & Vitals", badge: "CLI" },
 ];
 
 export function AdminHeader({
@@ -103,8 +99,11 @@ export function AdminHeader({
             ) : (
               <VolumeX className="h-3.5 w-3.5" />
             )}
-            <span>{!isMuted ? "HUD AUDIO ON" : "AUDIO MUTED"}</span>
+            <span className="hidden sm:inline">{!isMuted ? "HUD AUDIO" : "AUDIO OFF"}</span>
           </Button>
+
+          {/* Theme Toggle for Admin Panel */}
+          <ThemeToggle />
 
           <Button
             variant="ghost"
@@ -130,7 +129,7 @@ export function AdminHeader({
 
       {/* Navigation Tabs Bar */}
       <div className="mx-auto flex max-w-7xl overflow-x-auto px-4 sm:px-6">
-        <nav className="flex space-x-1 py-1">
+        <nav className="flex space-x-1 py-1.5">
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -140,15 +139,27 @@ export function AdminHeader({
                   cyberAudio.playTacticalClick(1200, 0.025);
                   onTabChange(tab.id);
                 }}
-                className={`relative px-3.5 py-2 text-xs font-medium whitespace-nowrap transition-colors rounded-md ${
+                className={`relative flex items-center gap-1.5 px-4 py-2 text-xs font-mono font-medium whitespace-nowrap transition-all rounded-md ${
                   isActive
-                    ? "text-accent bg-muted/20 shadow-inner"
-                    : "text-muted-foreground hover:text-foreground hover:bg-white/[0.02]"
+                    ? "text-accent bg-surface shadow-sm border border-border"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
                 }`}
               >
-                {tab.label}
+                <span>{tab.label}</span>
+                {tab.badge && (
+                  <Badge
+                    variant="outline"
+                    className={`text-[9px] px-1.5 py-0 h-4 ${
+                      isActive
+                        ? "border-accent/40 bg-accent/15 text-accent"
+                        : "border-border text-muted-foreground"
+                    }`}
+                  >
+                    {tab.badge}
+                  </Badge>
+                )}
                 {isActive && (
-                  <span className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-accent" />
+                  <span className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-accent" />
                 )}
               </button>
             );

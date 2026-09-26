@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Globe, Radio, Navigation, Eye, Zap } from "lucide-react";
 import { cyberAudio } from "@/lib/admin/cyber-audio";
+import { useThreeThemeColors } from "@/lib/three-theme";
 
 interface NeuralGlobeProps {
   visitors: VisitorSessionRecord[];
@@ -47,6 +48,7 @@ function latLongToVector3(lat: number, lon: number, radius: number): THREE.Vecto
 
 function GlobeSphere({ radius = 2.4 }: { radius?: number }) {
   const meshRef = useRef<THREE.Mesh>(null);
+  const colors = useThreeThemeColors();
 
   useFrame((_, delta) => {
     if (meshRef.current) {
@@ -59,19 +61,24 @@ function GlobeSphere({ radius = 2.4 }: { radius?: number }) {
       {/* Tactical Wireframe Sphere */}
       <mesh>
         <sphereGeometry args={[radius, 36, 36]} />
-        <meshBasicMaterial color="#7CF9C9" wireframe transparent opacity={0.16} />
+        <meshBasicMaterial color={colors.accent} wireframe transparent opacity={0.22} />
       </mesh>
 
-      {/* Inner Dark Core */}
+      {/* Inner Core */}
       <mesh>
         <sphereGeometry args={[radius * 0.98, 32, 32]} />
-        <meshBasicMaterial color="#040914" />
+        <meshBasicMaterial color={colors.fog} />
       </mesh>
 
       {/* Equator and Meridian rings */}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <ringGeometry args={[radius + 0.01, radius + 0.03, 64]} />
-        <meshBasicMaterial color="#7CF9C9" transparent opacity={0.3} side={THREE.DoubleSide} />
+        <meshBasicMaterial
+          color={colors.accent}
+          transparent
+          opacity={0.4}
+          side={THREE.DoubleSide}
+        />
       </mesh>
     </group>
   );
@@ -154,6 +161,7 @@ function VisitorBeacon({
 
 export function NeuralGlobe({ visitors = [] }: NeuralGlobeProps) {
   const [selectedVisitor, setSelectedVisitor] = useState<VisitorSessionRecord | null>(null);
+  const colors = useThreeThemeColors();
   const radius = 2.4;
 
   const originVec = useMemo(
@@ -225,9 +233,10 @@ export function NeuralGlobe({ visitors = [] }: NeuralGlobeProps) {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="relative h-[480px] w-full bg-[#040914]">
+            <div className="relative h-[480px] w-full bg-background">
               <Canvas camera={{ position: [0, 2.5, 6], fov: 45 }}>
-                <ambientLight intensity={0.4} />
+                <color attach="background" args={[colors.fog]} />
+                <ambientLight intensity={colors.ambient} />
                 <pointLight position={[10, 10, 10]} intensity={1.2} />
 
                 {/* 3D Earth Globe Sphere */}

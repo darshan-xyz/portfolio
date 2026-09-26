@@ -22,6 +22,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const EMPTY_DATA: AdminDashboardData = {
   stats: {
@@ -62,6 +63,12 @@ function AdminPage() {
   const [passcode, setPasscode] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
+
+  // Executive sub-tab states for restructured modules
+  const [intelSubTab, setIntelSubTab] = useState<"globe" | "ghost" | "dossier">("globe");
+  const [securitySubTab, setSecuritySubTab] = useState<"sentinel" | "diagnostics">("sentinel");
+  const [crmSubTab, setCrmSubTab] = useState<"pipeline" | "cms">("pipeline");
+  const [termSubTab, setTermSubTab] = useState<"cli" | "vitals">("cli");
 
   // Real-time live state
   const [dashboardData, setDashboardData] = useState<AdminDashboardData>(EMPTY_DATA);
@@ -171,8 +178,11 @@ function AdminPage() {
   // If not authenticated, render Hardened Terminal Gate
   if (!isAuthenticated) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background px-4 font-sans text-foreground">
+      <div className="relative flex min-h-screen items-center justify-center bg-background px-4 font-sans text-foreground">
         <div aria-hidden className="scanlines pointer-events-none fixed inset-0 z-10" />
+        <div className="absolute top-4 right-4 z-30">
+          <ThemeToggle />
+        </div>
         <Card className="relative z-20 w-full max-w-md border-border bg-surface/80 backdrop-blur-2xl shadow-2xl">
           <CardHeader className="text-center pb-4">
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-accent/40 bg-background text-accent shadow-lg">
@@ -282,17 +292,169 @@ function AdminPage() {
 
       {/* Main Content Area */}
       <main className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        {/* Module 1: Executive Overview */}
         {activeTab === "overview" && <OverviewTab data={dashboardData} />}
-        {activeTab === "globe" && <NeuralGlobe visitors={dashboardData.visitors} />}
-        {activeTab === "ghost" && <GhostVectorReplay visitors={dashboardData.visitors} />}
-        {activeTab === "sentinel" && <ArchonSentinelView visitors={dashboardData.visitors} />}
-        {activeTab === "terminal" && <ArchonTerminal data={dashboardData} />}
-        {activeTab === "visitors" && <VisitorsTab visitors={dashboardData.visitors} />}
-        {activeTab === "crm" && <CrmTab inquiries={dashboardData.inquiries} />}
-        {activeTab === "cms" && <CmsTab resumeDownloads={dashboardData.stats.resumeDownloads} />}
-        {activeTab === "observability" && <ObservabilityTab data={dashboardData} />}
+
+        {/* Module 2: Live Intelligence & Spatial Telemetry */}
+        {activeTab === "intelligence" && (
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center gap-2 border-b border-border pb-3">
+              <span className="font-mono text-xs font-semibold text-muted-foreground mr-1">
+                INTELLIGENCE VIEW:
+              </span>
+              <button
+                type="button"
+                onClick={() => setIntelSubTab("globe")}
+                className={`px-3 py-1.5 font-mono text-xs rounded-md transition-all ${
+                  intelSubTab === "globe"
+                    ? "bg-accent/15 text-accent border border-accent/40 font-semibold shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20 border border-transparent"
+                }`}
+              >
+                🌐 3D Geospatial Globe
+              </button>
+              <button
+                type="button"
+                onClick={() => setIntelSubTab("ghost")}
+                className={`px-3 py-1.5 font-mono text-xs rounded-md transition-all ${
+                  intelSubTab === "ghost"
+                    ? "bg-accent/15 text-accent border border-accent/40 font-semibold shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20 border border-transparent"
+                }`}
+              >
+                👻 Ghost Vector Replay
+              </button>
+              <button
+                type="button"
+                onClick={() => setIntelSubTab("dossier")}
+                className={`px-3 py-1.5 font-mono text-xs rounded-md transition-all ${
+                  intelSubTab === "dossier"
+                    ? "bg-accent/15 text-accent border border-accent/40 font-semibold shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20 border border-transparent"
+                }`}
+              >
+                📋 Full Visitor Dossier ({dashboardData.visitors.length})
+              </button>
+            </div>
+
+            {intelSubTab === "globe" && <NeuralGlobe visitors={dashboardData.visitors} />}
+            {intelSubTab === "ghost" && <GhostVectorReplay visitors={dashboardData.visitors} />}
+            {intelSubTab === "dossier" && <VisitorsTab visitors={dashboardData.visitors} />}
+          </div>
+        )}
+
+        {/* Module 3: Cyber Sentinel & Security Chamber */}
         {activeTab === "security" && (
-          <SecurityTab auditLogs={auditLogs} securityDiagnostics={securityDiagnostics} />
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center gap-2 border-b border-border pb-3">
+              <span className="font-mono text-xs font-semibold text-muted-foreground mr-1">
+                DEFENSE VIEW:
+              </span>
+              <button
+                type="button"
+                onClick={() => setSecuritySubTab("sentinel")}
+                className={`px-3 py-1.5 font-mono text-xs rounded-md transition-all ${
+                  securitySubTab === "sentinel"
+                    ? "bg-accent/15 text-accent border border-accent/40 font-semibold shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20 border border-transparent"
+                }`}
+              >
+                🛡️ Threat Radar & IP Quarantine
+              </button>
+              <button
+                type="button"
+                onClick={() => setSecuritySubTab("diagnostics")}
+                className={`px-3 py-1.5 font-mono text-xs rounded-md transition-all ${
+                  securitySubTab === "diagnostics"
+                    ? "bg-accent/15 text-accent border border-accent/40 font-semibold shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20 border border-transparent"
+                }`}
+              >
+                🔒 Rate Limiting & Audit Chamber
+              </button>
+            </div>
+
+            {securitySubTab === "sentinel" && (
+              <ArchonSentinelView visitors={dashboardData.visitors} />
+            )}
+            {securitySubTab === "diagnostics" && (
+              <SecurityTab auditLogs={auditLogs} securityDiagnostics={securityDiagnostics} />
+            )}
+          </div>
+        )}
+
+        {/* Module 4: Recruiter CRM & Content */}
+        {activeTab === "crm" && (
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center gap-2 border-b border-border pb-3">
+              <span className="font-mono text-xs font-semibold text-muted-foreground mr-1">
+                TALENT VIEW:
+              </span>
+              <button
+                type="button"
+                onClick={() => setCrmSubTab("pipeline")}
+                className={`px-3 py-1.5 font-mono text-xs rounded-md transition-all ${
+                  crmSubTab === "pipeline"
+                    ? "bg-accent/15 text-accent border border-accent/40 font-semibold shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20 border border-transparent"
+                }`}
+              >
+                💼 Inquiries & Pipeline ({dashboardData.inquiries.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setCrmSubTab("cms")}
+                className={`px-3 py-1.5 font-mono text-xs rounded-md transition-all ${
+                  crmSubTab === "cms"
+                    ? "bg-accent/15 text-accent border border-accent/40 font-semibold shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20 border border-transparent"
+                }`}
+              >
+                📄 Resume & Content Asset Status
+              </button>
+            </div>
+
+            {crmSubTab === "pipeline" && <CrmTab inquiries={dashboardData.inquiries} />}
+            {crmSubTab === "cms" && (
+              <CmsTab resumeDownloads={dashboardData.stats.resumeDownloads} />
+            )}
+          </div>
+        )}
+
+        {/* Module 5: Terminal & Diagnostics */}
+        {activeTab === "terminal" && (
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center gap-2 border-b border-border pb-3">
+              <span className="font-mono text-xs font-semibold text-muted-foreground mr-1">
+                SYSTEM VIEW:
+              </span>
+              <button
+                type="button"
+                onClick={() => setTermSubTab("cli")}
+                className={`px-3 py-1.5 font-mono text-xs rounded-md transition-all ${
+                  termSubTab === "cli"
+                    ? "bg-accent/15 text-accent border border-accent/40 font-semibold shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20 border border-transparent"
+                }`}
+              >
+                ⚡ Matrix Directive CLI
+              </button>
+              <button
+                type="button"
+                onClick={() => setTermSubTab("vitals")}
+                className={`px-3 py-1.5 font-mono text-xs rounded-md transition-all ${
+                  termSubTab === "vitals"
+                    ? "bg-accent/15 text-accent border border-accent/40 font-semibold shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20 border border-transparent"
+                }`}
+              >
+                📊 3D WebGL & Core Web Vitals
+              </button>
+            </div>
+
+            {termSubTab === "cli" && <ArchonTerminal data={dashboardData} />}
+            {termSubTab === "vitals" && <ObservabilityTab data={dashboardData} />}
+          </div>
         )}
       </main>
     </div>

@@ -68,17 +68,20 @@ export function GhostVectorReplay({ visitors = [] }: GhostVectorReplayProps) {
     const w = canvas.width;
     const h = canvas.height;
 
-    // Clear background with dark tactical viewport
-    ctx.fillStyle = "#040914";
+    const isDark =
+      typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+
+    // Clear background with theme-aware viewport
+    ctx.fillStyle = isDark ? "#040914" : "#F8FAFC";
     ctx.fillRect(0, 0, w, h);
 
     // 1. Draw miniature wireframe portfolio sections
-    ctx.strokeStyle = "rgba(124, 249, 201, 0.12)";
+    ctx.strokeStyle = isDark ? "rgba(124, 249, 201, 0.14)" : "rgba(13, 147, 115, 0.22)";
     ctx.lineWidth = 1;
 
     // Wireframe Nav Header
     ctx.strokeRect(12, 10, w - 24, 18);
-    ctx.fillStyle = "rgba(124, 249, 201, 0.25)";
+    ctx.fillStyle = isDark ? "rgba(124, 249, 201, 0.35)" : "rgba(13, 147, 115, 0.85)";
     ctx.font = "8px monospace";
     ctx.fillText("DARSHAN.R // PORTFOLIO HUD", 16, 22);
 
@@ -106,9 +109,15 @@ export function GhostVectorReplay({ visitors = [] }: GhostVectorReplayProps) {
         const rad = 25;
 
         const radGrad = ctx.createRadialGradient(hx, hy, 2, hx, hy, rad);
-        radGrad.addColorStop(0, "rgba(56, 189, 248, 0.08)");
-        radGrad.addColorStop(0.5, "rgba(124, 249, 201, 0.04)");
-        radGrad.addColorStop(1, "rgba(124, 249, 201, 0)");
+        if (isDark) {
+          radGrad.addColorStop(0, "rgba(56, 189, 248, 0.08)");
+          radGrad.addColorStop(0.5, "rgba(124, 249, 201, 0.04)");
+          radGrad.addColorStop(1, "rgba(124, 249, 201, 0)");
+        } else {
+          radGrad.addColorStop(0, "rgba(2, 132, 199, 0.12)");
+          radGrad.addColorStop(0.5, "rgba(13, 147, 115, 0.06)");
+          radGrad.addColorStop(1, "rgba(13, 147, 115, 0)");
+        }
 
         ctx.fillStyle = radGrad;
         ctx.beginPath();
@@ -123,7 +132,7 @@ export function GhostVectorReplay({ visitors = [] }: GhostVectorReplayProps) {
 
       ctx.beginPath();
       ctx.lineWidth = 2;
-      ctx.strokeStyle = "rgba(124, 249, 201, 0.6)";
+      ctx.strokeStyle = isDark ? "rgba(124, 249, 201, 0.65)" : "rgba(13, 147, 115, 0.85)";
 
       activeSlice.forEach((pt, idx) => {
         const px = pt.x * w;
@@ -141,13 +150,13 @@ export function GhostVectorReplay({ visitors = [] }: GhostVectorReplayProps) {
 
           ctx.beginPath();
           ctx.arc(cx, cy, 9, 0, Math.PI * 2);
-          ctx.strokeStyle = "#B8FF3A";
+          ctx.strokeStyle = isDark ? "#B8FF3A" : "#16a34a";
           ctx.lineWidth = 1.5;
           ctx.stroke();
 
           ctx.beginPath();
           ctx.arc(cx, cy, 3, 0, Math.PI * 2);
-          ctx.fillStyle = "#B8FF3A";
+          ctx.fillStyle = isDark ? "#B8FF3A" : "#16a34a";
           ctx.fill();
         }
       });
@@ -162,7 +171,7 @@ export function GhostVectorReplay({ visitors = [] }: GhostVectorReplayProps) {
       // Glow halo
       ctx.beginPath();
       ctx.arc(gx, gy, 8, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(124, 249, 201, 0.25)";
+      ctx.fillStyle = isDark ? "rgba(124, 249, 201, 0.25)" : "rgba(13, 147, 115, 0.25)";
       ctx.fill();
 
       // Sharp reticle cursor
@@ -172,14 +181,14 @@ export function GhostVectorReplay({ visitors = [] }: GhostVectorReplayProps) {
       ctx.lineTo(gx + 4, gy + 9);
       ctx.lineTo(gx + 2, gy + 14);
       ctx.closePath();
-      ctx.fillStyle = "#7CF9C9";
-      ctx.shadowColor = "#7CF9C9";
+      ctx.fillStyle = isDark ? "#7CF9C9" : "#0D9373";
+      ctx.shadowColor = isDark ? "#7CF9C9" : "#0D9373";
       ctx.shadowBlur = 6;
       ctx.fill();
       ctx.shadowBlur = 0;
 
       // Coordinate readout tag
-      ctx.fillStyle = "rgba(124, 249, 201, 0.85)";
+      ctx.fillStyle = isDark ? "rgba(124, 249, 201, 0.9)" : "rgba(13, 147, 115, 0.95)";
       ctx.font = "9px monospace";
       ctx.fillText(
         `X:${Math.round(curPt.x * 100)}% Y:${Math.round(curPt.y * 100)}% T+${Math.round(curPt.t / 100) / 10}s`,
@@ -246,7 +255,7 @@ export function GhostVectorReplay({ visitors = [] }: GhostVectorReplayProps) {
                 ref={canvasRef}
                 width={560}
                 height={350}
-                className="h-full w-full object-contain bg-[#040914]"
+                className="h-full w-full object-contain bg-background"
               />
             </div>
 
