@@ -53,14 +53,6 @@ export interface TelemetryEvent {
   timestamp: string;
 }
 
-export interface VectorPoint {
-  x: number; // Normalized 0.0 - 1.0 (x / viewportWidth)
-  y: number; // Normalized 0.0 - 1.0 (y / viewportHeight)
-  scrollY: number; // Viewport scroll position (px)
-  t: number; // Timestamp (ms relative to session start)
-  click?: boolean; // True if pointerdown click
-}
-
 export interface TelemetryBatchPayload {
   sessionToken: string;
   visitorHash?: string;
@@ -76,5 +68,4 @@ export interface TelemetryBatchPayload {
   events: TelemetryEvent[];
   maxScrollPercentage?: number;
   activeDwellSeconds?: number;
-  trajectory?: VectorPoint[];
 }

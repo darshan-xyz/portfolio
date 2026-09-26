@@ -1,9 +1,6 @@
-import { useState, useEffect } from "react";
-import { Activity, ShieldCheck, LogOut, Radio, RefreshCw, Volume2, VolumeX } from "lucide-react";
+import { Activity, ShieldCheck, LogOut, Radio, RefreshCw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cyberAudio } from "@/lib/admin/cyber-audio";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface AdminHeaderProps {
   activeTab: string;
@@ -13,11 +10,12 @@ interface AdminHeaderProps {
 }
 
 const TABS = [
-  { id: "overview", label: "Command Center", badge: null },
-  { id: "intelligence", label: "Live Intelligence", badge: "3D & Vectors" },
-  { id: "security", label: "Cyber Sentinel", badge: "Active" },
-  { id: "crm", label: "Recruiter CRM", badge: null },
-  { id: "terminal", label: "Terminal & Vitals", badge: "CLI" },
+  { id: "overview", label: "Command Center" },
+  { id: "visitors", label: "Visitor Dossier" },
+  { id: "crm", label: "Recruiter CRM" },
+  { id: "cms", label: "Content & Resume" },
+  { id: "observability", label: "3D & Web Vitals" },
+  { id: "security", label: "Security & Audit" },
 ];
 
 export function AdminHeader({
@@ -26,17 +24,6 @@ export function AdminHeader({
   activeVisitorsCount,
   onLogout,
 }: AdminHeaderProps) {
-  const [isMuted, setIsMuted] = useState<boolean>(cyberAudio.getMuted());
-
-  useEffect(() => {
-    cyberAudio.updateHeartbeat(activeVisitorsCount);
-  }, [activeVisitorsCount]);
-
-  const toggleAudio = () => {
-    const active = cyberAudio.toggleMute();
-    setIsMuted(!active);
-  };
-
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/90 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
@@ -83,28 +70,6 @@ export function AdminHeader({
 
         {/* Global Controls */}
         <div className="flex items-center gap-2">
-          {/* Cyber-Acoustic HUD Audio Synthesizer Toggle */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleAudio}
-            className={`h-8 gap-1.5 font-mono text-xs transition-colors ${
-              !isMuted
-                ? "border-accent bg-accent/20 text-accent"
-                : "border-border text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {!isMuted ? (
-              <Volume2 className="h-3.5 w-3.5 text-accent animate-pulse" />
-            ) : (
-              <VolumeX className="h-3.5 w-3.5" />
-            )}
-            <span className="hidden sm:inline">{!isMuted ? "HUD AUDIO" : "AUDIO OFF"}</span>
-          </Button>
-
-          {/* Theme Toggle for Admin Panel */}
-          <ThemeToggle />
-
           <Button
             variant="ghost"
             size="sm"
@@ -129,37 +94,22 @@ export function AdminHeader({
 
       {/* Navigation Tabs Bar */}
       <div className="mx-auto flex max-w-7xl overflow-x-auto px-4 sm:px-6">
-        <nav className="flex space-x-1 py-1.5">
+        <nav className="flex space-x-1 py-1">
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
-                onClick={() => {
-                  cyberAudio.playTacticalClick(1200, 0.025);
-                  onTabChange(tab.id);
-                }}
-                className={`relative flex items-center gap-1.5 px-4 py-2 text-xs font-mono font-medium whitespace-nowrap transition-all rounded-md ${
+                onClick={() => onTabChange(tab.id)}
+                className={`relative px-3.5 py-2 text-xs font-medium whitespace-nowrap transition-colors rounded-md ${
                   isActive
-                    ? "text-accent bg-surface shadow-sm border border-border"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
+                    ? "text-accent bg-muted/20 shadow-inner"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/[0.02]"
                 }`}
               >
-                <span>{tab.label}</span>
-                {tab.badge && (
-                  <Badge
-                    variant="outline"
-                    className={`text-[9px] px-1.5 py-0 h-4 ${
-                      isActive
-                        ? "border-accent/40 bg-accent/15 text-accent"
-                        : "border-border text-muted-foreground"
-                    }`}
-                  >
-                    {tab.badge}
-                  </Badge>
-                )}
+                {tab.label}
                 {isActive && (
-                  <span className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-accent" />
+                  <span className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-accent" />
                 )}
               </button>
             );
