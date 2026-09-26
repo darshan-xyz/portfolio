@@ -3,6 +3,7 @@ import type {
   TelemetryBatchPayload,
   TelemetryEvent,
   TelemetryEventName,
+  VectorPoint,
 } from "./types";
 import { resolveAccurateDeviceProfile } from "./device-detector";
 
@@ -11,6 +12,9 @@ let sessionToken = "";
 let visitorId = "";
 let deviceProfile: DeviceTelemetryProfile | null = null;
 let eventQueue: TelemetryEvent[] = [];
+const trajectoryBuffer: VectorPoint[] = [];
+const sessionStartTime = Date.now();
+let lastPointerSampleTime = 0;
 let maxScrollPercentage = 0;
 let activeDwellSeconds = 0;
 let lastPulseActiveSeconds = 0;
@@ -85,6 +89,8 @@ export function flushTelemetryBatch(isImmediate = false) {
   const eventsToFlush = [...eventQueue];
   eventQueue = [];
 
+  const pointsToFlush = trajectoryBuffer.splice(0, 40);
+
   const payload: TelemetryBatchPayload = {
     sessionToken,
     visitorHash: visitorId,
@@ -94,6 +100,7 @@ export function flushTelemetryBatch(isImmediate = false) {
     events: eventsToFlush,
     maxScrollPercentage,
     activeDwellSeconds,
+    trajectory: pointsToFlush.length > 0 ? pointsToFlush : undefined,
   };
 
   const jsonString = JSON.stringify(payload);
@@ -228,6 +235,54 @@ function setupGlobalClickListener() {
   });
 }
 
+function setupPointerTracker() {
+  if (typeof window === "undefined") return;
+
+  window.addEventListener(
+    "pointermove",
+    (e: PointerEvent) => {
+      const now = Date.now();
+      // Throttle samples to every 100ms
+      if (now - lastPointerSampleTime < 100) return;
+      lastPointerSampleTime = now;
+
+      const vw = window.innerWidth || 1;
+      const vh = window.innerHeight || 1;
+
+      trajectoryBuffer.push({
+        x: Math.round((e.clientX / vw) * 1000) / 1000,
+        y: Math.round((e.clientY / vh) * 1000) / 1000,
+        scrollY: Math.round(window.scrollY),
+        t: now - sessionStartTime,
+      });
+
+      // Keep buffer bounded
+      if (trajectoryBuffer.length > 100) {
+        trajectoryBuffer.shift();
+      }
+    },
+    { passive: true },
+  );
+
+  window.addEventListener(
+    "pointerdown",
+    (e: PointerEvent) => {
+      const now = Date.now();
+      const vw = window.innerWidth || 1;
+      const vh = window.innerHeight || 1;
+
+      trajectoryBuffer.push({
+        x: Math.round((e.clientX / vw) * 1000) / 1000,
+        y: Math.round((e.clientY / vh) * 1000) / 1000,
+        scrollY: Math.round(window.scrollY),
+        t: now - sessionStartTime,
+        click: true,
+      });
+    },
+    { passive: true },
+  );
+}
+
 export function initTelemetry() {
   if (typeof window === "undefined" || initialized) return;
   if (window.location.pathname.startsWith("/admin")) return;
@@ -261,6 +316,7 @@ export function initTelemetry() {
   setupDwellEngine();
   setupSectionObserver();
   setupGlobalClickListener();
+  setupPointerTracker();
 
   // Periodic flush every 8s
   flushInterval = window.setInterval(() => {

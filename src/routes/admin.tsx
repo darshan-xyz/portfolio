@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
-import { ShieldCheck, Lock, ArrowRight, AlertCircle, RefreshCw } from "lucide-react";
+import { ShieldCheck, Lock, ArrowRight, AlertCircle, RefreshCw, Fingerprint } from "lucide-react";
 import type { AdminDashboardData } from "@/lib/admin/types";
 import type { AuditLogEntry } from "@/lib/admin/telemetry-store";
 import { AdminHeader } from "@/components/admin/AdminHeader";
@@ -10,6 +10,15 @@ import { CrmTab } from "@/components/admin/CrmTab";
 import { CmsTab } from "@/components/admin/CmsTab";
 import { ObservabilityTab } from "@/components/admin/ObservabilityTab";
 import { SecurityTab } from "@/components/admin/SecurityTab";
+import { NeuralGlobe } from "@/components/admin/three/NeuralGlobe";
+import { GhostVectorReplay } from "@/components/admin/GhostVectorReplay";
+import { ArchonSentinelView } from "@/components/admin/ArchonSentinelView";
+import { ArchonTerminal } from "@/components/admin/ArchonTerminal";
+import {
+  checkWebAuthnSupport,
+  verifyBiometricPasskey,
+  registerBiometricPasskey,
+} from "@/lib/admin/webauthn";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -88,6 +97,8 @@ function AdminPage() {
     }
   }, []);
 
+  const [webAuthnSupported, setWebAuthnSupported] = useState<boolean>(false);
+
   useEffect(() => {
     // Check if session has stored authentication
     if (typeof window !== "undefined") {
@@ -95,8 +106,32 @@ function AdminPage() {
       if (stored === "authenticated") {
         setIsAuthenticated(true);
       }
+      const { isSupported } = checkWebAuthnSupport();
+      setWebAuthnSupported(isSupported);
     }
   }, []);
+
+  const handleBiometricAuth = async () => {
+    setErrorMsg("");
+    const res = await verifyBiometricPasskey();
+    if (res.success) {
+      setIsAuthenticated(true);
+      sessionStorage.setItem("__prt_admin_auth", "authenticated");
+    } else {
+      setErrorMsg(res.message);
+    }
+  };
+
+  const handleRegisterPasskey = async () => {
+    setErrorMsg("");
+    const res = await registerBiometricPasskey();
+    if (res.success) {
+      setIsAuthenticated(true);
+      sessionStorage.setItem("__prt_admin_auth", "authenticated");
+    } else {
+      setErrorMsg(res.message);
+    }
+  };
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -187,6 +222,30 @@ function AdminPage() {
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
 
+              {webAuthnSupported && (
+                <div className="pt-2 border-t border-border/60 space-y-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleBiometricAuth}
+                    className="w-full gap-2 border-accent/40 bg-accent/10 font-mono text-xs text-accent hover:bg-accent hover:text-accent-foreground transition-all"
+                  >
+                    <Fingerprint className="h-4 w-4" />
+                    Biometric Passkey (Windows Hello / Touch ID)
+                  </Button>
+
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      onClick={handleRegisterPasskey}
+                      className="font-mono text-[10px] text-muted-foreground hover:text-accent hover:underline"
+                    >
+                      [ Enroll This Device Hardware Passkey ]
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="border-t border-border pt-3 text-center">
                 <button
                   type="button"
@@ -224,6 +283,10 @@ function AdminPage() {
       {/* Main Content Area */}
       <main className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6">
         {activeTab === "overview" && <OverviewTab data={dashboardData} />}
+        {activeTab === "globe" && <NeuralGlobe visitors={dashboardData.visitors} />}
+        {activeTab === "ghost" && <GhostVectorReplay visitors={dashboardData.visitors} />}
+        {activeTab === "sentinel" && <ArchonSentinelView visitors={dashboardData.visitors} />}
+        {activeTab === "terminal" && <ArchonTerminal data={dashboardData} />}
         {activeTab === "visitors" && <VisitorsTab visitors={dashboardData.visitors} />}
         {activeTab === "crm" && <CrmTab inquiries={dashboardData.inquiries} />}
         {activeTab === "cms" && <CmsTab resumeDownloads={dashboardData.stats.resumeDownloads} />}

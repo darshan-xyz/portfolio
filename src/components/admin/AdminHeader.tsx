@@ -1,6 +1,8 @@
-import { Activity, ShieldCheck, LogOut, Radio, RefreshCw } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Activity, ShieldCheck, LogOut, Radio, RefreshCw, Volume2, VolumeX } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cyberAudio } from "@/lib/admin/cyber-audio";
 
 interface AdminHeaderProps {
   activeTab: string;
@@ -11,6 +13,10 @@ interface AdminHeaderProps {
 
 const TABS = [
   { id: "overview", label: "Command Center" },
+  { id: "globe", label: "🌐 3D Neural Globe" },
+  { id: "ghost", label: "👻 Ghost Vector" },
+  { id: "sentinel", label: "🛡️ Sentinel Defense" },
+  { id: "terminal", label: "⚡ Matrix CLI" },
   { id: "visitors", label: "Visitor Dossier" },
   { id: "crm", label: "Recruiter CRM" },
   { id: "cms", label: "Content & Resume" },
@@ -24,6 +30,17 @@ export function AdminHeader({
   activeVisitorsCount,
   onLogout,
 }: AdminHeaderProps) {
+  const [isMuted, setIsMuted] = useState<boolean>(cyberAudio.getMuted());
+
+  useEffect(() => {
+    cyberAudio.updateHeartbeat(activeVisitorsCount);
+  }, [activeVisitorsCount]);
+
+  const toggleAudio = () => {
+    const active = cyberAudio.toggleMute();
+    setIsMuted(!active);
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/90 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
@@ -70,6 +87,25 @@ export function AdminHeader({
 
         {/* Global Controls */}
         <div className="flex items-center gap-2">
+          {/* Cyber-Acoustic HUD Audio Synthesizer Toggle */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleAudio}
+            className={`h-8 gap-1.5 font-mono text-xs transition-colors ${
+              !isMuted
+                ? "border-accent bg-accent/20 text-accent"
+                : "border-border text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {!isMuted ? (
+              <Volume2 className="h-3.5 w-3.5 text-accent animate-pulse" />
+            ) : (
+              <VolumeX className="h-3.5 w-3.5" />
+            )}
+            <span>{!isMuted ? "HUD AUDIO ON" : "AUDIO MUTED"}</span>
+          </Button>
+
           <Button
             variant="ghost"
             size="sm"
@@ -100,7 +136,10 @@ export function AdminHeader({
             return (
               <button
                 key={tab.id}
-                onClick={() => onTabChange(tab.id)}
+                onClick={() => {
+                  cyberAudio.playTacticalClick(1200, 0.025);
+                  onTabChange(tab.id);
+                }}
                 className={`relative px-3.5 py-2 text-xs font-medium whitespace-nowrap transition-colors rounded-md ${
                   isActive
                     ? "text-accent bg-muted/20 shadow-inner"

@@ -224,6 +224,7 @@ export const Route = createFileRoute("/api/telemetry")({
             hasResumeDownload: hasResume,
             hasContactIntent: hasContact,
             events: body.events,
+            trajectory: body.trajectory,
           });
 
           // Asynchronously persist to Supabase if available

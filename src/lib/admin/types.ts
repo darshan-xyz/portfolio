@@ -32,6 +32,13 @@ export interface VisitorSessionRecord {
   hasContactIntent: boolean;
   timestamp: string;
   eventsCount: number;
+  trajectory?: Array<{
+    x: number;
+    y: number;
+    scrollY: number;
+    t: number;
+    click?: boolean;
+  }>;
   timeline: Array<{
     time: string;
     event: string;

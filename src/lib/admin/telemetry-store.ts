@@ -61,6 +61,13 @@ interface StoredSession {
     payload?: Record<string, unknown>;
     timestamp: string;
   }>;
+  trajectory?: Array<{
+    x: number;
+    y: number;
+    scrollY: number;
+    t: number;
+    click?: boolean;
+  }>;
 }
 
 // Global in-memory storage on server (attached to globalThis for Vite SSR singleton stability)
@@ -165,6 +172,13 @@ export function recordSession(sessionData: {
     payload?: Record<string, unknown>;
     timestamp: string;
   }>;
+  trajectory?: Array<{
+    x: number;
+    y: number;
+    scrollY: number;
+    t: number;
+    click?: boolean;
+  }>;
 }) {
   const now = Date.now();
   const existing = sessionsMap.get(sessionData.sessionToken);
@@ -203,6 +217,14 @@ export function recordSession(sessionData: {
     }
     if (existing.events.length > 100) {
       existing.events.splice(0, existing.events.length - 100);
+    }
+
+    if (sessionData.trajectory && sessionData.trajectory.length > 0) {
+      existing.trajectory = existing.trajectory || [];
+      existing.trajectory.push(...sessionData.trajectory);
+      if (existing.trajectory.length > 100) {
+        existing.trajectory.splice(0, existing.trajectory.length - 100);
+      }
     }
   } else {
     sessionsMap.set(sessionData.sessionToken, {
@@ -244,6 +266,7 @@ export function recordSession(sessionData: {
       startedAt: now,
       lastActiveAt: now,
       events: formattedEvents,
+      trajectory: sessionData.trajectory ? [...sessionData.trajectory] : [],
     });
   }
 
@@ -527,6 +550,7 @@ export function getLiveDashboardData(): AdminDashboardData {
         hasContactIntent: s.hasContactIntent,
         timestamp: timeAgo,
         eventsCount: s.events.length,
+        trajectory: s.trajectory || [],
         timeline: s.events.map((e) => {
           const eventTime = new Date(e.timestamp).getTime();
           const diffSec = Number.isNaN(eventTime)
