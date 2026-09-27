@@ -28,13 +28,13 @@ export function HeroSection({ profileData = defaultProfile }: HeroSectionProps) 
   return (
     <section
       id="hero"
-      className="relative isolate flex min-h-[112svh] items-start overflow-hidden px-2 pb-14 pt-16 sm:px-3 sm:pt-20 lg:px-4"
+      className="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden px-2 pb-6 pt-16 sm:px-3 sm:pb-8 sm:pt-18 lg:px-4 lg:pb-10 lg:pt-20"
     >
       <div aria-hidden className="hero-haze hero-haze-left" />
       <div aria-hidden className="hero-haze hero-haze-right" />
 
       <div
-        className={`hero-glass relative mx-auto flex min-h-[calc(100svh-5rem)] w-full flex-col overflow-hidden rounded-[2rem] border border-border/80 px-5 py-5 shadow-2xl sm:min-h-[calc(104svh-5rem)] sm:px-8 sm:py-7 lg:rounded-[2.5rem] lg:px-12 ${introTransition ? "hero-from-intro" : ""}`}
+        className={`hero-glass relative mx-auto flex w-full max-w-[1920px] min-h-[calc(100svh-4rem)] sm:min-h-[calc(100svh-4.5rem)] lg:min-h-[calc(100svh-5rem)] xl:aspect-[16/9] xl:max-h-[min(940px,calc(100svh-5rem))] flex-col justify-between overflow-hidden rounded-[2rem] border border-border/80 px-5 py-5 shadow-2xl sm:px-8 sm:py-7 lg:rounded-[2.5rem] lg:px-12 ${introTransition ? "hero-from-intro" : ""}`}
       >
         <div className="relative z-30 flex items-center justify-between font-mono text-[9px] uppercase text-muted-foreground sm:text-[10px]">
           <span className="flex items-center gap-2 text-accent">
@@ -51,7 +51,8 @@ export function HeroSection({ profileData = defaultProfile }: HeroSectionProps) 
           loop
           muted
           playsInline
-          className={`hero-portrait pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-[40%_top] ${introTransition ? "hero-portrait-entering" : ""}`}
+          preload="auto"
+          className={`hero-portrait pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-[40%_top] sm:object-[42%_top] ${introTransition ? "hero-portrait-entering" : ""}`}
         />
         <div aria-hidden className="hero-glass-wash absolute inset-0 z-10" />
 

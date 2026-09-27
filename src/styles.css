@@ -125,16 +125,16 @@
 .hero-glass-wash {
   background:
     linear-gradient(
-      to bottom,
-      var(--hero-wash),
-      transparent 28%,
-      transparent 72%,
-      var(--hero-wash)
+      to top,
+      color-mix(in oklab, var(--background) 94%, transparent) 0%,
+      color-mix(in oklab, var(--background) 65%, transparent) 26%,
+      color-mix(in oklab, var(--background) 20%, transparent) 46%,
+      transparent 64%
     ),
-    radial-gradient(
-      circle at 50% 48%,
-      transparent 10%,
-      color-mix(in oklab, var(--background) 52%, transparent) 72%
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--background) 40%, transparent) 0%,
+      transparent 16%
     );
 }
 
@@ -153,10 +153,10 @@
 
 .hero-portrait {
   transform: scale(1);
+  filter: contrast(1.04) brightness(1.02) saturate(1.06);
   transition:
     transform 1.35s cubic-bezier(0.22, 1, 0.36, 1),
     filter 1.2s ease;
-  will-change: transform, filter;
 }
 
 .hero-portrait-entering {
