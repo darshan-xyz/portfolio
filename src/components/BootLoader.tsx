@@ -36,8 +36,34 @@ export function BootLoader() {
   );
   const [bootFading, setBootFading] = useState(false);
   const [introLeaving, setIntroLeaving] = useState(false);
+  const introVideoRef = useRef<HTMLVideoElement>(null);
 
   const target = "DARSHAN_R";
+
+  useEffect(() => {
+    const video = introVideoRef.current;
+    if (!video) return;
+    video.defaultMuted = true;
+    video.muted = true;
+    const playVideo = () => {
+      video.play().catch(() => {});
+    };
+    playVideo();
+
+    const handleInteraction = () => {
+      if (video.paused) playVideo();
+    };
+
+    window.addEventListener("pointerdown", handleInteraction, { once: true });
+    window.addEventListener("touchstart", handleInteraction, { once: true });
+    window.addEventListener("keydown", handleInteraction, { once: true });
+
+    return () => {
+      window.removeEventListener("pointerdown", handleInteraction);
+      window.removeEventListener("touchstart", handleInteraction);
+      window.removeEventListener("keydown", handleInteraction);
+    };
+  }, []);
 
   // Deep links to inner routes get a short veil instead of the full boot.
   useEffect(() => {
@@ -112,14 +138,22 @@ export function BootLoader() {
           introLeaving ? "opacity-0" : "opacity-100"
         }`}
       >
-        <img
+        <video
+          ref={introVideoRef}
           aria-hidden
-          src={exploreBackground.url}
-          alt=""
-          className={`intro-background pointer-events-none absolute inset-0 h-full w-full object-cover object-[44%_center] ${
+          src="/homepage.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster={exploreBackground.url}
+          className={`intro-background pointer-events-none absolute inset-0 h-full w-full object-cover object-[40%_top] sm:object-[42%_top] ${
             introLeaving ? "intro-background-leaving" : ""
           }`}
-        />
+        >
+          <source src="/homepage.mp4" type="video/mp4" />
+        </video>
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-background/40" />
         <div
           aria-hidden
