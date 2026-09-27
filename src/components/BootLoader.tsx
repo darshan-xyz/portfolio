@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
-import exploreBackground from "@/assets/darshan-explore-background.png.asset.json";
 
 // Set once the intro has played in this browser session, so client-side
 // navigations between routes never replay it (and never flash a layout).
@@ -112,15 +111,7 @@ export function BootLoader() {
           introLeaving ? "opacity-0" : "opacity-100"
         }`}
       >
-        <img
-          aria-hidden
-          src={exploreBackground.url}
-          alt=""
-          className={`intro-background pointer-events-none absolute inset-0 h-full w-full object-cover object-[44%_center] ${
-            introLeaving ? "intro-background-leaving" : ""
-          }`}
-        />
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-background/40" />
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-background" />
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"

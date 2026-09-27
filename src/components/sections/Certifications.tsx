@@ -1,5 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { activities, certifications } from "@/data/portfolio";
+import {
+  activities as defaultActivities,
+  certifications as defaultCertifications,
+  type Certification,
+  type Activity,
+} from "@/data/portfolio";
 
 const ISSUERS = ["PMI", "Microsoft", "FreeCodeCamp", "LinkedIn", "Great Learning"];
 const COURSEWORK = [
@@ -16,8 +21,18 @@ const IN_PROGRESS = [
   { name: "Real-Time Vision & Edge Pipeline", status: "ADVANCING · 76%" },
 ];
 
-export function CertificationsSection() {
-  const ticker = [...certifications, ...certifications];
+interface CertificationsSectionProps {
+  data?: Certification[];
+  activitiesData?: Activity[];
+}
+
+export function CertificationsSection({
+  data = defaultCertifications,
+  activitiesData = defaultActivities,
+}: CertificationsSectionProps) {
+  const certsList = data;
+  const actsList = activitiesData;
+  const ticker = [...certsList, ...certsList];
 
   return (
     <section id="certifications" className="relative border-t border-border py-32">
@@ -39,7 +54,7 @@ export function CertificationsSection() {
         {/* Stats bar */}
         <div className="mb-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { k: certifications.length, v: "certifications_earned" },
+            { k: certsList.length, v: "certifications_earned" },
             { k: ISSUERS.length, v: "unique_issuers" },
             { k: "3+", v: "in_progress" },
             { k: "2024", v: "latest_credential" },
@@ -54,7 +69,7 @@ export function CertificationsSection() {
         </div>
 
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {certifications.map((c, i) => (
+          {certsList.map((c, i) => (
             <Link
               key={c.slug}
               to="/certifications/$slug"
@@ -185,7 +200,7 @@ export function CertificationsSection() {
           // beyond_the_code
         </p>
         <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {activities.map((a, i) => (
+          {actsList.map((a, i) => (
             <Link
               key={a.slug}
               to="/activities/$slug"

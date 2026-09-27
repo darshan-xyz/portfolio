@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { profile, projects, experience, certifications } from "@/data/portfolio";
 import { abs } from "@/lib/seo";
+import { getPortfolioData, type PortfolioContentData } from "@/lib/admin/portfolio-store";
 
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { Reveal } from "@/components/Reveal";
@@ -110,29 +112,51 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
+  const [content, setContent] = useState<PortfolioContentData>(getPortfolioData);
+
+  useEffect(() => {
+    // Sync initial state from client localStorage
+    setContent(getPortfolioData());
+
+    const handleUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<PortfolioContentData>;
+      if (customEvent.detail) {
+        setContent(customEvent.detail);
+      } else {
+        setContent(getPortfolioData());
+      }
+    };
+
+    window.addEventListener("portfolio:cms-updated", handleUpdate);
+    return () => window.removeEventListener("portfolio:cms-updated", handleUpdate);
+  }, []);
+
   return (
     <div className="min-h-screen text-foreground">
       <SiteNav />
       <ScrollProgress />
       <ScrollParticles />
       <main>
-        <HeroSection />
+        <HeroSection profileData={content.profile} />
         <ScrollMarquee />
         <Reveal>
-          <ExperienceSection />
+          <ExperienceSection data={content.experience} education={content.profile.education} />
         </Reveal>
         <Reveal>
-          <ProjectsSection />
+          <ProjectsSection data={content.projects} />
         </Reveal>
         <ScrollMarquee />
         <Reveal>
-          <SkillsSection />
+          <SkillsSection data={content.skillGroups} />
         </Reveal>
         <Reveal>
-          <CertificationsSection />
+          <CertificationsSection
+            data={content.certifications}
+            activitiesData={content.activities}
+          />
         </Reveal>
         <Reveal>
-          <ContactSection />
+          <ContactSection profileData={content.profile} />
         </Reveal>
       </main>
       <SiteFooter />

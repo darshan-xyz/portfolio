@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { profile } from "@/data/portfolio";
-import exploreBackground from "@/assets/darshan-explore-background.png.asset.json";
+import { profile as defaultProfile } from "@/data/portfolio";
+import type { ProfileData } from "@/lib/admin/portfolio-store";
 
 const SIGNALS = [
   { text: "Can it see?", placement: "left-[7%] top-[20%]" },
@@ -8,8 +8,13 @@ const SIGNALS = [
   { text: "Ship the intelligence.", placement: "left-[11%] bottom-[18%]" },
 ];
 
-export function HeroSection() {
+interface HeroSectionProps {
+  profileData?: ProfileData;
+}
+
+export function HeroSection({ profileData = defaultProfile }: HeroSectionProps) {
   const [introTransition, setIntroTransition] = useState(false);
+  const activeProfile = profileData;
 
   useEffect(() => {
     const beginTransition = () => {
@@ -39,11 +44,14 @@ export function HeroSection() {
           <span>DR / 2026</span>
         </div>
 
-        <img
+        <video
           aria-hidden
-          src={exploreBackground.url}
-          alt=""
-          className={`hero-portrait pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-[44%_center] ${introTransition ? "hero-portrait-entering" : ""}`}
+          src="/homepage.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className={`hero-portrait pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-[40%_top] ${introTransition ? "hero-portrait-entering" : ""}`}
         />
         <div aria-hidden className="hero-glass-wash absolute inset-0 z-10" />
 

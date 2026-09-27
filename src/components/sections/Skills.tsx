@@ -1,12 +1,18 @@
 import { useMemo, useState } from "react";
-import { skillGroups } from "@/data/portfolio";
+import { skillGroups as defaultSkillGroups } from "@/data/portfolio";
+import type { SkillGroup } from "@/lib/admin/portfolio-store";
 
-export function SkillsSection() {
-  const [active, setActive] = useState<string>(skillGroups[0].label);
+interface SkillsSectionProps {
+  data?: SkillGroup[];
+}
+
+export function SkillsSection({ data = defaultSkillGroups }: SkillsSectionProps) {
+  const groups = data;
+  const [active, setActive] = useState<string>(groups[0]?.label ?? "");
 
   const activeGroup = useMemo(
-    () => skillGroups.find((g) => g.label === active) ?? skillGroups[0],
-    [active],
+    () => groups.find((g) => g.label === active) ?? groups[0] ?? { label: "", items: [] },
+    [active, groups],
   );
 
   return (
@@ -22,14 +28,14 @@ export function SkillsSection() {
             </h2>
           </div>
           <span className="font-mono text-[10px] uppercase text-muted-foreground">
-            every problem gets its own stack · {skillGroups.length} classes
+            every problem gets its own stack · {groups.length} classes
           </span>
         </div>
 
         <div className="flex flex-col gap-4">
           <div className="flex min-h-[420px] flex-col border border-border bg-surface/40">
             <div className="flex flex-wrap gap-1.5 border-b border-border/60 p-4">
-              {skillGroups.map((g) => (
+              {groups.map((g) => (
                 <button
                   key={g.label}
                   type="button"

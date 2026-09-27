@@ -1,7 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { projects } from "@/data/portfolio";
+import { projects as defaultProjects, type Project } from "@/data/portfolio";
 
-export function ProjectsSection() {
+interface ProjectsSectionProps {
+  data?: Project[];
+}
+
+export function ProjectsSection({ data = defaultProjects }: ProjectsSectionProps) {
+  const projectsList = data;
   return (
     <section id="projects" className="relative border-t border-border py-24">
       <div className="mx-auto max-w-7xl px-6">
@@ -15,12 +20,12 @@ export function ProjectsSection() {
             </h2>
           </div>
           <span className="font-mono text-[10px] uppercase text-muted-foreground">
-            SELECTED_PROJECTS_v2.0 · {projects.length} entries
+            SELECTED_PROJECTS_v2.0 · {projectsList.length} entries
           </span>
         </div>
 
         <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
-          {projects.map((p, i) => {
+          {projectsList.map((p, i) => {
             return (
               <Link
                 key={p.slug}

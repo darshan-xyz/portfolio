@@ -1,7 +1,20 @@
 import { Link } from "@tanstack/react-router";
-import { experience, profile } from "@/data/portfolio";
+import {
+  experience as defaultExperience,
+  profile as defaultProfile,
+  type ExperienceRole,
+} from "@/data/portfolio";
 
-export function ExperienceSection() {
+interface ExperienceSectionProps {
+  data?: ExperienceRole[];
+  education?: Array<{ school: string; degree: string; period: string; grade: string }>;
+}
+
+export function ExperienceSection({
+  data = defaultExperience,
+  education = defaultProfile.education,
+}: ExperienceSectionProps) {
+  const experienceList = data;
   return (
     <section id="experience" className="relative border-t border-border py-24">
       <div className="mx-auto max-w-7xl px-6">
@@ -15,12 +28,12 @@ export function ExperienceSection() {
             </h2>
           </div>
           <span className="font-mono text-[10px] uppercase text-muted-foreground">
-            declassified · {experience.length} entries
+            declassified · {experienceList.length} entries
           </span>
         </div>
 
         <div className="grid grid-cols-12 gap-4">
-          {experience.map((role, i) => (
+          {experienceList.map((role, i) => (
             <article
               key={role.company}
               className={`col-span-12 flex flex-col border border-border bg-surface/40 p-8 transition-colors hover:border-accent ${
@@ -80,7 +93,7 @@ export function ExperienceSection() {
               [ formation.log ]
             </p>
             <div className="mt-4 grid gap-3 md:grid-cols-3">
-              {profile.education.map((ed) => (
+              {education.map((ed) => (
                 <div key={ed.school} className="border border-border/60 bg-surface/40 p-4">
                   <p className="font-mono text-[10px] uppercase tracking-widest text-accent">
                     {ed.period}

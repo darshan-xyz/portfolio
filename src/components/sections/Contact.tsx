@@ -1,20 +1,26 @@
 import { useState, type FormEvent } from "react";
-import { profile } from "@/data/portfolio";
+import { profile as defaultProfile } from "@/data/portfolio";
 import resumeAsset from "@/assets/resume.pdf.asset.json";
+import type { ProfileData } from "@/lib/admin/portfolio-store";
 
-const SOCIALS = [
-  { label: "email", value: profile.email, href: `mailto:${profile.email}` },
-  {
-    label: "phone",
-    value: profile.phone,
-    href: `tel:${profile.phone.replace(/\s/g, "")}`,
-  },
-  { label: "linkedin", value: "linkedin.com/in/darshan-r", href: profile.linkedin },
-  { label: "github", value: "github.com/darshan-com", href: profile.github },
-  { label: "leetcode", value: "leetcode.com/dar05", href: profile.leetcode },
-];
+interface ContactSectionProps {
+  profileData?: ProfileData;
+}
 
-export function ContactSection() {
+export function ContactSection({ profileData = defaultProfile }: ContactSectionProps) {
+  const activeProfile = profileData;
+  const socials = [
+    { label: "email", value: activeProfile.email, href: `mailto:${activeProfile.email}` },
+    {
+      label: "phone",
+      value: activeProfile.phone,
+      href: `tel:${activeProfile.phone.replace(/\s/g, "")}`,
+    },
+    { label: "linkedin", value: "linkedin.com/in/darshan-r", href: activeProfile.linkedin },
+    { label: "github", value: "github.com/darshan-com", href: activeProfile.github },
+    { label: "leetcode", value: "leetcode.com/dar05", href: activeProfile.leetcode },
+  ];
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
@@ -89,7 +95,7 @@ export function ContactSection() {
             <div>
               <span className="text-accent-2">{"{"}</span>
             </div>
-            {SOCIALS.map((s, i) => (
+            {socials.map((s, i) => (
               <div key={s.label} className="min-w-0 pl-4">
                 <a
                   href={s.href}
@@ -102,7 +108,7 @@ export function ContactSection() {
                   <span className="truncate text-foreground group-hover:text-accent">
                     "{s.value}"
                   </span>
-                  {i < SOCIALS.length - 1 && <span className="text-muted-foreground">,</span>}
+                  {i < socials.length - 1 && <span className="text-muted-foreground">,</span>}
                 </a>
               </div>
             ))}
