@@ -49,7 +49,7 @@ export function HeroSection({ profileData = defaultProfile }: HeroSectionProps) 
           aria-hidden
           src={exploreBackground.url}
           alt=""
-          className={`hero-portrait pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-[44%_center] ${introTransition ? "hero-portrait-entering" : ""}`}
+          className={`hero-portrait pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-[44%_top] ${introTransition ? "hero-portrait-entering" : ""}`}
         />
         <div aria-hidden className="hero-glass-wash absolute inset-0 z-10" />
 
