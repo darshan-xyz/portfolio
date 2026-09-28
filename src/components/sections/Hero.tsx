@@ -74,7 +74,9 @@ export function HeroSection({ profileData = defaultProfile }: HeroSectionProps) 
           <span>DR / 2026</span>
         </div>
 
-        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        <div
+          className={`hero-portrait pointer-events-none absolute inset-0 z-0 overflow-hidden ${introTransition ? "hero-portrait-entering" : ""}`}
+        >
           <video
             ref={videoRef}
             aria-hidden
@@ -85,7 +87,7 @@ export function HeroSection({ profileData = defaultProfile }: HeroSectionProps) 
             playsInline
             preload="auto"
             poster={exploreBackground.url}
-            className={`hero-portrait pointer-events-none absolute inset-y-0 left-[-15%] w-[130%] max-w-none h-full object-cover object-[center_top] ${introTransition ? "hero-portrait-entering" : ""}`}
+            className="h-full w-full max-w-none origin-top scale-[1.08] -translate-x-[2.5%] object-cover object-[center_top] sm:-translate-x-[3%]"
           >
             <source src="/homevideo.mp4" type="video/mp4" />
           </video>
