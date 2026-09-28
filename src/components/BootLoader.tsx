@@ -138,22 +138,24 @@ export function BootLoader() {
           introLeaving ? "opacity-0" : "opacity-100"
         }`}
       >
-        <video
-          ref={introVideoRef}
-          aria-hidden
-          src="/homevideo.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          poster={exploreBackground.url}
-          className={`intro-background pointer-events-none absolute inset-0 h-full w-full object-cover object-[40%_top] sm:object-[42%_top] ${
-            introLeaving ? "intro-background-leaving" : ""
-          }`}
-        >
-          <source src="/homevideo.mp4" type="video/mp4" />
-        </video>
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <video
+            ref={introVideoRef}
+            aria-hidden
+            src="/homevideo.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            poster={exploreBackground.url}
+            className={`intro-background pointer-events-none absolute inset-y-0 left-[-15%] w-[130%] max-w-none h-full object-cover object-[center_top] ${
+              introLeaving ? "intro-background-leaving" : ""
+            }`}
+          >
+            <source src="/homevideo.mp4" type="video/mp4" />
+          </video>
+        </div>
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-background/40" />
         <div
           aria-hidden

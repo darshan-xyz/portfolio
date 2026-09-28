@@ -74,21 +74,22 @@ export function HeroSection({ profileData = defaultProfile }: HeroSectionProps) 
           <span>DR / 2026</span>
         </div>
 
-        <video
-          ref={videoRef}
-          aria-hidden
-          src="/homevideo.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          poster={exploreBackground.url}
-          style={{ objectPosition: "32% top" }}
-          className={`hero-portrait pointer-events-none absolute inset-0 z-0 h-full w-full object-cover ${introTransition ? "hero-portrait-entering" : ""}`}
-        >
-          <source src="/homevideo.mp4" type="video/mp4" />
-        </video>
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+          <video
+            ref={videoRef}
+            aria-hidden
+            src="/homevideo.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            poster={exploreBackground.url}
+            className={`hero-portrait pointer-events-none absolute inset-y-0 left-[-15%] w-[130%] max-w-none h-full object-cover object-[center_top] ${introTransition ? "hero-portrait-entering" : ""}`}
+          >
+            <source src="/homevideo.mp4" type="video/mp4" />
+          </video>
+        </div>
         <div aria-hidden className="hero-glass-wash absolute inset-0 z-10" />
 
         <div className="relative z-20 flex flex-1 -translate-x-2 flex-col items-center justify-end px-1 pb-6 pt-16 text-center sm:-translate-x-6 sm:px-3 sm:pb-8 lg:-translate-x-10 lg:pb-9">
