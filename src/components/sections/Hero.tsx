@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { profile as defaultProfile } from "@/data/portfolio";
 import type { ProfileData } from "@/lib/admin/portfolio-store";
 import exploreBackground from "@/assets/darshan-explore-background.png.asset.json";
@@ -15,11 +15,40 @@ interface HeroSectionProps {
 
 export function HeroSection({ profileData = defaultProfile }: HeroSectionProps) {
   const [introTransition, setIntroTransition] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const activeProfile = profileData;
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.defaultMuted = true;
+    video.muted = true;
+    const playVideo = () => {
+      video.play().catch(() => {});
+    };
+    playVideo();
+
+    const handleInteraction = () => {
+      if (video.paused) playVideo();
+    };
+
+    window.addEventListener("pointerdown", handleInteraction, { once: true });
+    window.addEventListener("touchstart", handleInteraction, { once: true });
+    window.addEventListener("keydown", handleInteraction, { once: true });
+
+    return () => {
+      window.removeEventListener("pointerdown", handleInteraction);
+      window.removeEventListener("touchstart", handleInteraction);
+      window.removeEventListener("keydown", handleInteraction);
+    };
+  }, []);
 
   useEffect(() => {
     const beginTransition = () => {
       setIntroTransition(true);
+      if (videoRef.current) {
+        videoRef.current.play().catch(() => {});
+      }
       window.setTimeout(() => setIntroTransition(false), 1400);
     };
     window.addEventListener("portfolio:intro-dismiss", beginTransition);
@@ -45,12 +74,20 @@ export function HeroSection({ profileData = defaultProfile }: HeroSectionProps) 
           <span>DR / 2026</span>
         </div>
 
-        <img
+        <video
+          ref={videoRef}
           aria-hidden
-          src={exploreBackground.url}
-          alt=""
-          className={`hero-portrait pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-[44%_top] ${introTransition ? "hero-portrait-entering" : ""}`}
-        />
+          src="/homevideo.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster={exploreBackground.url}
+          className={`hero-portrait pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-[40%_top] sm:object-[42%_top] ${introTransition ? "hero-portrait-entering" : ""}`}
+        >
+          <source src="/homevideo.mp4" type="video/mp4" />
+        </video>
         <div aria-hidden className="hero-glass-wash absolute inset-0 z-10" />
 
         <div className="relative z-20 flex flex-1 -translate-x-2 flex-col items-center justify-end px-1 pb-6 pt-16 text-center sm:-translate-x-6 sm:px-3 sm:pb-8 lg:-translate-x-10 lg:pb-9">
