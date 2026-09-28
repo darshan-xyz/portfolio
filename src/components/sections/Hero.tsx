@@ -84,7 +84,8 @@ export function HeroSection({ profileData = defaultProfile }: HeroSectionProps) 
           playsInline
           preload="auto"
           poster={exploreBackground.url}
-          className={`hero-portrait pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-[44%_top] ${introTransition ? "hero-portrait-entering" : ""}`}
+          style={{ objectPosition: "32% top" }}
+          className={`hero-portrait pointer-events-none absolute inset-0 z-0 h-full w-full object-cover ${introTransition ? "hero-portrait-entering" : ""}`}
         >
           <source src="/homevideo.mp4" type="video/mp4" />
         </video>
