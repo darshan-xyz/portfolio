@@ -53,7 +53,7 @@ export function ContactSection({ profileData = defaultProfile }: ContactSectionP
         company ? ` (${company.trim()})` : ""
       }\nReply to: ${email.trim()}`,
     );
-    window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:${activeProfile.email}?subject=${subject}&body=${body}`;
     setSent(true);
   };
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   FileText,
   Plus,
@@ -7,6 +7,7 @@ import {
   Eye,
   Github,
   Download,
+  Upload,
   Briefcase,
   Layers,
   Award,
@@ -14,6 +15,9 @@ import {
   User,
   RotateCcw,
   Sparkles,
+  CheckCircle2,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import {
   getPortfolioData,
@@ -32,13 +36,27 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 
-interface CmsTabProps {
-  resumeDownloads?: number;
+export interface ResumeMeta {
+  exists: boolean;
+  sizeBytes: number;
+  sizeFormatted: string;
+  updatedAt: string;
 }
 
-export function CmsTab({ resumeDownloads = 0 }: CmsTabProps) {
+interface CmsTabProps {
+  resumeDownloads?: number;
+  resumeMeta?: ResumeMeta | null;
+  onRefresh?: () => void;
+}
+
+export function CmsTab({ resumeDownloads = 0, resumeMeta, onRefresh }: CmsTabProps) {
   const [data, setData] = useState<PortfolioContentData>(getPortfolioData);
   const [activeSubTab, setActiveSubTab] = useState<string>("projects");
+
+  // Resume upload state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingResume, setIsUploadingResume] = useState(false);
+  const [resumeVersionTag, setResumeVersionTag] = useState<number>(Date.now());
 
   // Modal edit states
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -210,6 +228,80 @@ export function CmsTab({ resumeDownloads = 0 }: CmsTabProps) {
     }
   };
 
+  const handleResumeFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+      toast.error("Please select a valid PDF document (.pdf)");
+      return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      toast.error("File size exceeds 15 MB limit. Please optimize the PDF.");
+      return;
+    }
+
+    setIsUploadingResume(true);
+    const toastId = toast.loading(`Uploading "${file.name}" to live portfolio...`);
+
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const base64Data = reader.result as string;
+          const res = await fetch("/api/admin", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "upload_resume",
+              fileName: file.name,
+              base64Data,
+            }),
+          });
+
+          const json = await res.json();
+          if (res.ok && json.success) {
+            toast.success("Resume updated successfully! Live across all download points.", {
+              id: toastId,
+            });
+            setResumeVersionTag(Date.now());
+            if (onRefresh) onRefresh();
+          } else {
+            toast.error(json.error || "Failed to upload resume.", { id: toastId });
+          }
+        } catch (uploadErr) {
+          toast.error("Network error during resume upload.", { id: toastId });
+        } finally {
+          setIsUploadingResume(false);
+          if (fileInputRef.current) fileInputRef.current.value = "";
+        }
+      };
+
+      reader.onerror = () => {
+        toast.error("Could not read local file.", { id: toastId });
+        setIsUploadingResume(false);
+      };
+
+      reader.readAsDataURL(file);
+    } catch (err) {
+      toast.error("Unexpected error reading file.", { id: toastId });
+      setIsUploadingResume(false);
+    }
+  };
+
+  const formattedUpdateDate = resumeMeta?.updatedAt
+    ? new Date(resumeMeta.updatedAt).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "Sep 23, 2026";
+
+  const formattedSize = resumeMeta?.sizeFormatted || "173 KB";
+
   return (
     <div className="space-y-8">
       {/* Top Header & Reset Action */}
@@ -221,7 +313,7 @@ export function CmsTab({ resumeDownloads = 0 }: CmsTabProps) {
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
             Real-time visual editor with live sync across all sections: Projects, Experience,
-            Skills, Certifications, Community & Profile.
+            Skills, Certifications, Community, Profile & Resume Asset.
           </p>
         </div>
 
@@ -236,37 +328,70 @@ export function CmsTab({ resumeDownloads = 0 }: CmsTabProps) {
         </Button>
       </div>
 
-      {/* 1. Resume Asset Studio Banner */}
+      {/* 1. Resume Asset Studio Banner with Live Upload Option */}
       <Card className="border-border bg-surface/40 backdrop-blur-md">
-        <CardHeader className="flex flex-row items-center justify-between pb-3">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 gap-2">
           <div>
             <CardTitle className="font-mono text-sm text-foreground flex items-center gap-2">
               <FileText className="h-4 w-4 text-accent-2" />
               AUTHENTIC RESUME ASSET & DOWNLOAD TELEMETRY
             </CardTitle>
             <p className="text-xs text-muted-foreground">
-              Verified active resume asset linked directly to real-time download telemetry
+              Directly replace or update your live public resume PDF without redeploying code
             </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleResumeFileSelect}
+              accept="application/pdf,.pdf"
+              className="hidden"
+            />
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploadingResume}
+              className="h-8 gap-1.5 font-mono text-xs bg-accent text-accent-foreground hover:bg-accent/90 glow-cyan transition-all"
+            >
+              {isUploadingResume ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-3.5 w-3.5" />
+                  Update Resume PDF
+                </>
+              )}
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
           <div className="rounded-xl border border-border bg-background/80 p-4 transition-all hover:border-accent/40">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-accent-2/30 bg-accent-2/10 text-accent-2">
-                  <FileText className="h-5 w-5" />
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div className="flex items-start sm:items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-accent-2/30 bg-accent-2/10 text-accent-2">
+                  <FileText className="h-6 w-6" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="font-semibold text-sm text-foreground">
                       Darshan_R_Resume.pdf
                     </span>
                     <Badge className="border-emerald-500/30 bg-emerald-500/10 text-[9px] text-emerald-400">
-                      LIVE ASSET
+                      LIVE ON SITE
+                    </Badge>
+                    <Badge variant="outline" className="border-border text-[9px] font-mono text-muted-foreground">
+                      /public/resume.pdf
                     </Badge>
                   </div>
-                  <div className="text-[11px] text-muted-foreground mt-0.5">
-                    Size: 173 KB · Updated: Sep 23, 2026 ·{" "}
+                  <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span>Size: <strong className="text-foreground font-mono">{formattedSize}</strong></span>
+                    <span>·</span>
+                    <span>Updated: <strong className="text-foreground font-mono">{formattedUpdateDate}</strong></span>
+                    <span>·</span>
                     <span className="text-accent-2 font-mono font-medium">
                       {resumeDownloads} verified downloads
                     </span>
@@ -274,9 +399,19 @@ export function CmsTab({ resumeDownloads = 0 }: CmsTabProps) {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 pt-2 sm:pt-0">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingResume}
+                  className="h-8 gap-1.5 border-dashed border-accent/40 bg-accent/5 font-mono text-xs text-accent hover:bg-accent/15"
+                >
+                  <Upload className="h-3.5 w-3.5" />
+                  Choose File...
+                </Button>
                 <a
-                  href="/resume.pdf"
+                  href={`/resume.pdf?v=${resumeVersionTag}`}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-muted/20 px-3 font-mono text-xs text-foreground hover:bg-muted transition-colors"
@@ -285,7 +420,7 @@ export function CmsTab({ resumeDownloads = 0 }: CmsTabProps) {
                   Preview Asset
                 </a>
                 <a
-                  href="/resume.pdf"
+                  href={`/resume.pdf?v=${resumeVersionTag}`}
                   download="Darshan_R_Resume.pdf"
                   className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-accent-2/30 bg-accent-2/10 px-3 font-mono text-xs text-accent-2 hover:bg-accent-2/20 transition-colors"
                 >
@@ -293,6 +428,14 @@ export function CmsTab({ resumeDownloads = 0 }: CmsTabProps) {
                   Direct Download
                 </a>
               </div>
+            </div>
+
+            {/* Quick Helper Note */}
+            <div className="mt-3 flex items-center gap-2 rounded-lg border border-border/40 bg-surface/30 px-3 py-1.5 text-[11px] text-muted-foreground">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+              <span>
+                Any uploaded PDF immediately takes effect across the navigation bar, mobile menu, and contact section download buttons.
+              </span>
             </div>
           </div>
         </CardContent>

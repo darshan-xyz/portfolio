@@ -67,6 +67,12 @@ function AdminPage() {
     lastBlockedAt?: string;
     lastBlockedIp?: string;
   } | null>(null);
+  const [resumeMeta, setResumeMeta] = useState<{
+    exists: boolean;
+    sizeBytes: number;
+    sizeFormatted: string;
+    updatedAt: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchRealData = useCallback(async () => {
@@ -79,6 +85,7 @@ function AdminPage() {
           setActiveVisitorsCount(json.activeCount ?? 0);
           if (json.auditLogs) setAuditLogs(json.auditLogs);
           if (json.securityDiagnostics) setSecurityDiagnostics(json.securityDiagnostics);
+          if (json.resumeMeta) setResumeMeta(json.resumeMeta);
         }
       }
     } catch {
@@ -226,7 +233,13 @@ function AdminPage() {
         {activeTab === "overview" && <OverviewTab data={dashboardData} />}
         {activeTab === "visitors" && <VisitorsTab visitors={dashboardData.visitors} />}
         {activeTab === "crm" && <CrmTab inquiries={dashboardData.inquiries} />}
-        {activeTab === "cms" && <CmsTab resumeDownloads={dashboardData.stats.resumeDownloads} />}
+        {activeTab === "cms" && (
+          <CmsTab
+            resumeDownloads={dashboardData.stats.resumeDownloads}
+            resumeMeta={resumeMeta}
+            onRefresh={fetchRealData}
+          />
+        )}
         {activeTab === "observability" && <ObservabilityTab data={dashboardData} />}
         {activeTab === "security" && (
           <SecurityTab auditLogs={auditLogs} securityDiagnostics={securityDiagnostics} />
