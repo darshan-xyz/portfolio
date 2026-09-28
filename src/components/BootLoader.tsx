@@ -141,7 +141,7 @@ export function BootLoader() {
         <video
           ref={introVideoRef}
           aria-hidden
-          src="/homepage.mp4"
+          src="/homevideo.mp4"
           autoPlay
           loop
           muted
@@ -152,7 +152,7 @@ export function BootLoader() {
             introLeaving ? "intro-background-leaving" : ""
           }`}
         >
-          <source src="/homepage.mp4" type="video/mp4" />
+          <source src="/homevideo.mp4" type="video/mp4" />
         </video>
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-background/40" />
         <div
