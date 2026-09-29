@@ -17,7 +17,7 @@ export function ContactSection({ profileData = defaultProfile }: ContactSectionP
       href: `tel:${activeProfile.phone.replace(/\s/g, "")}`,
     },
     { label: "linkedin", value: "linkedin.com/in/darshan-r", href: activeProfile.linkedin },
-    { label: "github", value: "github.com/darshan-com", href: activeProfile.github },
+    { label: "github", value: "github.com/darshan-xyz", href: activeProfile.github },
     { label: "leetcode", value: "leetcode.com/dar05", href: activeProfile.leetcode },
   ];
 

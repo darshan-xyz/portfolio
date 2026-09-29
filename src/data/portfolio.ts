@@ -13,7 +13,7 @@ export const profile = {
   phone: "+91 6379480139",
   location: "Coimbatore, India",
   linkedin: "https://www.linkedin.com/in/darshan-r",
-  github: "https://github.com/darshan-com",
+  github: "https://github.com/darshan-xyz",
   leetcode: "https://leetcode.com/dar05",
   bio: "Final-year B.E. Computer Science and Engineering student specializing in AI/ML, Generative AI, agentic systems, and computer vision with Project Management skills. Experienced in building end-to-end AI applications involving LLMs, RAG pipelines, multi-agent workflows, and real-time vision systems. Strong Python and software engineering foundation with hands-on experience developing and evaluating production-grade AI solutions.",
   education: [
