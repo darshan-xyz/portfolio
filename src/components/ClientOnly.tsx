@@ -32,10 +32,33 @@ export function prefetchScenes() {
   if (prefetched || typeof window === "undefined") return;
   prefetched = true;
   const run = () => Object.values(loaders).forEach((load) => void load());
-  const ric = (window as unknown as { requestIdleCallback?: (cb: () => void) => void })
-    .requestIdleCallback;
-  if (ric) ric(run);
-  else window.setTimeout(run, 400);
+
+  const schedule = () => {
+    const ric = (
+      window as unknown as {
+        requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => void;
+      }
+    ).requestIdleCallback;
+    if (ric) {
+      ric(run, { timeout: 3500 });
+    } else {
+      window.setTimeout(run, 2000);
+    }
+  };
+
+  try {
+    if (sessionStorage.getItem("darshan_intro_seen") === "1") {
+      schedule();
+      return;
+    }
+  } catch {}
+
+  const onDismiss = () => {
+    window.removeEventListener("portfolio:intro-dismiss", onDismiss);
+    schedule();
+  };
+  window.addEventListener("portfolio:intro-dismiss", onDismiss, { once: true });
+  window.setTimeout(schedule, 4500);
 }
 
 export const LazyHeroScene = lazy(loaders.shardField);
@@ -58,7 +81,21 @@ export function Scene3D({
 }) {
   const { allow3D } = useMotionState();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (!allow3D) return;
+    const ric = (
+      window as unknown as {
+        requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => void;
+      }
+    ).requestIdleCallback;
+    if (ric) {
+      ric(() => setMounted(true), { timeout: 1200 });
+    } else {
+      const t = window.setTimeout(() => setMounted(true), 400);
+      return () => window.clearTimeout(t);
+    }
+  }, [allow3D]);
 
   if (!mounted || !allow3D) return <>{fallback}</>;
   return <Suspense fallback={fallback}>{children}</Suspense>;

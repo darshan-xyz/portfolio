@@ -21,11 +21,17 @@ if (typeof window !== "undefined") {
 function Terrain() {
   const colors = useThreeThemeColors();
   const meshRef = useRef<THREE.Mesh>(null);
-  const geo = useMemo(() => new THREE.PlaneGeometry(28, 28, 96, 96), []);
+  const geo = useMemo(() => new THREE.PlaneGeometry(28, 28, 54, 54), []);
   const base = useMemo(() => {
     const arr = new Float32Array(geo.attributes.position.array.length);
     arr.set(geo.attributes.position.array as Float32Array);
     return arr;
+  }, [geo]);
+
+  useEffect(() => {
+    return () => {
+      geo.dispose();
+    };
   }, [geo]);
 
   useFrame((state) => {

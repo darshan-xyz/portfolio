@@ -6,6 +6,23 @@ import exploreBackground from "@/assets/darshan-explore-background.png.asset.jso
 // navigations between routes never replay it (and never flash a layout).
 let introPlayed = false;
 
+function getHasSeenIntro(): boolean {
+  if (introPlayed) return true;
+  if (typeof window === "undefined") return false;
+  try {
+    return sessionStorage.getItem("darshan_intro_seen") === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markIntroSeen(): void {
+  introPlayed = true;
+  try {
+    sessionStorage.setItem("darshan_intro_seen", "1");
+  } catch {}
+}
+
 const STEPS = [
   "> INITIALIZING_KERNEL",
   "> LOADING_NEURAL_MODULES",
@@ -24,7 +41,7 @@ export function BootLoader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   // Captured on first render (SSR + hydration agree): the entry route decides
   // whether we play the full boot sequence or just a quick veil.
-  const entry = useRef({ path: pathname, played: introPlayed });
+  const entry = useRef({ path: pathname, played: getHasSeenIntro() });
   const isHomeEntry = entry.current.path === "/";
   const skip = entry.current.played;
 
@@ -68,8 +85,8 @@ export function BootLoader() {
   // Deep links to inner routes get a short veil instead of the full boot.
   useEffect(() => {
     if (skip || isHomeEntry) return;
-    const t1 = setTimeout(() => setIntroLeaving(true), 260);
-    const t2 = setTimeout(() => setPhase("gone"), 900);
+    const t1 = setTimeout(() => setIntroLeaving(true), 200);
+    const t2 = setTimeout(() => setPhase("gone"), 600);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -77,7 +94,7 @@ export function BootLoader() {
   }, [skip, isHomeEntry]);
 
   useEffect(() => {
-    if (phase === "gone") introPlayed = true;
+    if (phase === "gone") markIntroSeen();
   }, [phase]);
 
   useEffect(() => {
@@ -87,13 +104,13 @@ export function BootLoader() {
       i += 1;
       setName(target.slice(0, i));
       if (i >= target.length) clearInterval(typing);
-    }, 55);
+    }, 25);
     const steps = setInterval(() => {
       setStepIdx((s) => (s < STEPS.length ? s + 1 : s));
-    }, 380);
+    }, 130);
     const bar = setInterval(() => {
-      setProgress((p) => Math.min(100, p + Math.random() * 6 + 3));
-    }, 110);
+      setProgress((p) => Math.min(100, p + Math.random() * 8 + 6));
+    }, 40);
     return () => {
       clearInterval(typing);
       clearInterval(steps);
@@ -105,8 +122,8 @@ export function BootLoader() {
   useEffect(() => {
     if (phase !== "boot") return;
     if (progress >= 100 && stepIdx >= STEPS.length) {
-      const t1 = setTimeout(() => setBootFading(true), 220);
-      const t2 = setTimeout(() => setPhase("intro"), 900);
+      const t1 = setTimeout(() => setBootFading(true), 120);
+      const t2 = setTimeout(() => setPhase("intro"), 600);
       return () => {
         clearTimeout(t1);
         clearTimeout(t2);
@@ -123,9 +140,16 @@ export function BootLoader() {
   }, [phase]);
 
   const dismiss = () => {
+    markIntroSeen();
     window.dispatchEvent(new CustomEvent("portfolio:intro-dismiss"));
     setIntroLeaving(true);
-    setTimeout(() => setPhase("gone"), 900);
+    setTimeout(() => setPhase("gone"), 600);
+  };
+
+  const skipImmediately = () => {
+    markIntroSeen();
+    window.dispatchEvent(new CustomEvent("portfolio:intro-dismiss"));
+    setPhase("gone");
   };
 
   if (phase === "gone") return null;
@@ -134,7 +158,7 @@ export function BootLoader() {
     <>
       {/* Intro layer — always mounted while overlay visible, sits under boot */}
       <div
-        className={`fixed inset-0 z-[100] flex flex-col overflow-hidden bg-background transition-opacity duration-[900ms] ${
+        className={`fixed inset-0 z-[100] flex flex-col overflow-hidden bg-background transition-opacity duration-[600ms] ${
           introLeaving ? "opacity-0" : "opacity-100"
         }`}
       >
@@ -146,7 +170,7 @@ export function BootLoader() {
           loop
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
           poster={exploreBackground.url}
           className={`intro-background pointer-events-none absolute inset-0 h-full w-full object-cover object-[40%_top] sm:object-[42%_top] ${
             introLeaving ? "intro-background-leaving" : ""
@@ -174,7 +198,20 @@ export function BootLoader() {
         />
         <div className="relative flex items-center justify-between px-6 py-5 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground md:px-10">
           <span className="text-accent">■ SYSTEM_ONLINE</span>
-          <span>v2.1 · secure_link</span>
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:inline">v2.1 · secure_link</span>
+            <button
+              type="button"
+              onClick={skipImmediately}
+              className="group pointer-events-auto inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-accent transition-all hover:border-accent hover:bg-accent hover:text-accent-foreground"
+              title="Skip intro directly to portfolio"
+            >
+              <span>SKIP INTRO</span>
+              <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
+                →
+              </span>
+            </button>
+          </div>
         </div>
         <div className="relative flex flex-1 flex-col items-center justify-end px-4 pb-[2svh] text-center">
           <p className="font-mono text-[10px] uppercase tracking-[0.5em] text-accent">
@@ -225,7 +262,7 @@ export function BootLoader() {
       {phase === "boot" && (
         <div
           aria-hidden
-          className={`fixed inset-0 z-[110] flex flex-col overflow-hidden bg-background transition-opacity duration-[900ms] ${
+          className={`fixed inset-0 z-[110] flex flex-col overflow-hidden bg-background transition-opacity duration-[600ms] ${
             bootFading ? "opacity-0" : "opacity-100"
           }`}
         >
@@ -248,8 +285,21 @@ export function BootLoader() {
                 // operator
               </span>
             </div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent-2">
-              v2.1 · secure_link
+            <div className="flex items-center gap-3">
+              <span className="hidden font-mono text-[10px] uppercase tracking-[0.3em] text-accent-2 sm:inline">
+                v2.1 · secure_link
+              </span>
+              <button
+                type="button"
+                onClick={skipImmediately}
+                className="group pointer-events-auto inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-accent transition-all hover:border-accent hover:bg-accent hover:text-accent-foreground"
+                title="Skip intro directly to portfolio"
+              >
+                <span>SKIP INTRO</span>
+                <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
+                  →
+                </span>
+              </button>
             </div>
           </div>
           <div className="relative flex flex-1 items-center justify-center px-6">

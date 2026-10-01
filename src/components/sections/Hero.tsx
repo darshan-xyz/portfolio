@@ -9,16 +9,27 @@ const SIGNALS = [
   { text: "Ship the intelligence.", placement: "left-[11%] bottom-[18%]" },
 ];
 
+function hasSeenIntro(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return sessionStorage.getItem("darshan_intro_seen") === "1";
+  } catch {
+    return false;
+  }
+}
+
 interface HeroSectionProps {
   profileData?: ProfileData;
 }
 
 export function HeroSection({ profileData = defaultProfile }: HeroSectionProps) {
   const [introTransition, setIntroTransition] = useState(false);
+  const [videoReady, setVideoReady] = useState(hasSeenIntro);
   const videoRef = useRef<HTMLVideoElement>(null);
   const activeProfile = profileData;
 
   useEffect(() => {
+    if (!videoReady) return;
     const video = videoRef.current;
     if (!video) return;
     video.defaultMuted = true;
@@ -41,11 +52,12 @@ export function HeroSection({ profileData = defaultProfile }: HeroSectionProps) 
       window.removeEventListener("touchstart", handleInteraction);
       window.removeEventListener("keydown", handleInteraction);
     };
-  }, []);
+  }, [videoReady]);
 
   useEffect(() => {
     const beginTransition = () => {
       setIntroTransition(true);
+      setVideoReady(true);
       if (videoRef.current) {
         videoRef.current.play().catch(() => {});
       }
@@ -77,16 +89,15 @@ export function HeroSection({ profileData = defaultProfile }: HeroSectionProps) 
         <video
           ref={videoRef}
           aria-hidden
-          src="/homevideo.mp4"
           autoPlay
           loop
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
           poster={exploreBackground.url}
           className={`hero-portrait pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-[center_top] ${introTransition ? "hero-portrait-entering" : ""}`}
         >
-          <source src="/homevideo.mp4" type="video/mp4" />
+          {videoReady && <source src="/homevideo.mp4" type="video/mp4" />}
         </video>
         <div aria-hidden className="hero-glass-wash absolute inset-0 z-10" />
 
